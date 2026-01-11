@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        body.work-mode {
+            background-color: #d95550;
+        }
+
+        body.break-mode {
+            background-color: #4c9195;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .session-type {
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .round-counter {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1.5rem;
+        }
+
+        .timer-display {
+            font-size: 6rem;
+            font-weight: 700;
+            color: white;
+            margin: 1rem 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .duration-selector {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .duration-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            background: transparent;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .duration-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .duration-btn.active {
+            background: white;
+            color: #333;
+            border-color: white;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .control-btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.1s ease, opacity 0.2s ease;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .start-btn {
+            background: white;
+            color: #333;
+        }
+
+        .reset-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .youtube-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .youtube-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .youtube-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .youtube-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .youtube-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .youtube-status {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 0.5rem;
+        }
+
+        #youtube-player {
+            position: absolute;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: background 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="work-mode">
+    <a href="index.html" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Back to Tools</span>
+    </a>
+
+    <div class="container">
+        <div class="session-type" id="session-type">Work Session</div>
+        <div class="round-counter" id="round-counter">Round 1 of 4</div>
+
+        <div class="timer-display" id="timer-display">25:00</div>
+
+        <div class="duration-selector">
+            <button class="duration-btn" data-duration="10">10 min</button>
+            <button class="duration-btn" data-duration="15">15 min</button>
+            <button class="duration-btn active" data-duration="25">25 min</button>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn start-btn" id="start-btn">Start</button>
+            <button class="control-btn reset-btn" id="reset-btn">Reset</button>
+        </div>
+
+        <div class="youtube-section">
+            <label class="youtube-label" for="youtube-url">YouTube URL (audio will play during work sessions)</label>
+            <input type="text" id="youtube-url" class="youtube-input" placeholder="https://www.youtube.com/watch?v=...">
+            <div class="youtube-status" id="youtube-status"></div>
+        </div>
+    </div>
+
+    <div id="youtube-player"></div>
+
+    <script>
+        // State
+        const state = {
+            sessionDuration: 25,
+            shortBreakDuration: 5,
+            longBreakDuration: 15,
+            currentRound: 1,
+            totalRounds: 4,
+            isRunning: false,
+            isBreak: false,
+            timeRemaining: 25 * 60,
+            intervalId: null,
+            youtubePlayer: null,
+            youtubeReady: false
+        };
+
+        // DOM Elements
+        const timerDisplay = document.getElementById('timer-display');
+        const sessionType = document.getElementById('session-type');
+        const roundCounter = document.getElementById('round-counter');
+        const startBtn = document.getElementById('start-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const durationBtns = document.querySelectorAll('.duration-btn');
+        const youtubeInput = document.getElementById('youtube-url');
+        const youtubeStatus = document.getElementById('youtube-status');
+
+        // Load YouTube IFrame API
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // YouTube API callback
+        window.onYouTubeIframeAPIReady = function() {
+            state.youtubeReady = true;
+        };
+
+        // Extract video ID from YouTube URL
+        function extractVideoId(url) {
+            if (!url) return null;
+
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+                /youtube\.com\/watch\?.*v=([^&\n?#]+)/
+            ];
+
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match) return match[1];
+            }
+            return null;
+        }
+
+        // Initialize or update YouTube player
+        function initYoutubePlayer(videoId) {
+            if (!state.youtubeReady) {
+                youtubeStatus.textContent = 'YouTube API loading...';
+                return;
+            }
+
+            if (state.youtubePlayer) {
+                state.youtubePlayer.destroy();
+            }
+
+            state.youtubePlayer = new YT.Player('youtube-player', {
+                height: '1',
+                width: '1',
+                videoId: videoId,
+                playerVars: {
+                    autoplay: 0,
+                    controls: 0,
+                    disablekb: 1,
+                    fs: 0,
+                    modestbranding: 1,
+                    rel: 0
+                },
+                events: {
+                    onReady: () => {
+                        youtubeStatus.textContent = 'Audio ready';
+                    },
+                    onError: (e) => {
+                        youtubeStatus.textContent = 'Error loading video';
+                    }
+                }
+            });
+        }
+
+        // Play YouTube audio
+        function playAudio() {
+            if (state.youtubePlayer && typeof state.youtubePlayer.playVideo === 'function') {
+                state.youtubePlayer.playVideo();
+            }
+        }
+
+        // Pause YouTube audio
+        function pauseAudio() {
+            if (state.youtubePlayer && typeof state.youtubePlayer.pauseVideo === 'function') {
+                state.youtubePlayer.pauseVideo();
+            }
+        }
+
+        // Format time as MM:SS
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Update display
+        function updateDisplay() {
+            timerDisplay.textContent = formatTime(state.timeRemaining);
+            sessionType.textContent = state.isBreak ? 'Break Time' : 'Work Session';
+            roundCounter.textContent = `Round ${state.currentRound} of ${state.totalRounds}`;
+            startBtn.textContent = state.isRunning ? 'Pause' : 'Start';
+
+            document.body.classList.toggle('work-mode', !state.isBreak);
+            document.body.classList.toggle('break-mode', state.isBreak);
+        }
+
+        // Timer tick
+        function tick() {
+            state.timeRemaining--;
+
+            if (state.timeRemaining <= 0) {
+                if (state.isBreak) {
+                    switchToWork();
+                } else {
+                    switchToBreak();
+                }
+            }
+
+            updateDisplay();
+        }
+
+        // Switch to break mode
+        function switchToBreak() {
+            state.isBreak = true;
+            pauseAudio();
+
+            // Determine break duration
+            const isLongBreak = state.currentRound >= state.totalRounds;
+            state.timeRemaining = (isLongBreak ? state.longBreakDuration : state.shortBreakDuration) * 60;
+
+            updateDisplay();
+        }
+
+        // Switch to work mode
+        function switchToWork() {
+            state.isBreak = false;
+
+            // Increment round after break
+            if (state.currentRound >= state.totalRounds) {
+                state.currentRound = 1;
+            } else {
+                state.currentRound++;
+            }
+
+            state.timeRemaining = state.sessionDuration * 60;
+
+            if (state.isRunning) {
+                playAudio();
+            }
+
+            updateDisplay();
+        }
+
+        // Start timer
+        function startTimer() {
+            state.isRunning = true;
+            state.intervalId = setInterval(tick, 1000);
+
+            if (!state.isBreak) {
+                playAudio();
+            }
+
+            updateDisplay();
+        }
+
+        // Pause timer
+        function pauseTimer() {
+            state.isRunning = false;
+            clearInterval(state.intervalId);
+            state.intervalId = null;
+            pauseAudio();
+            updateDisplay();
+        }
+
+        // Reset timer
+        function resetTimer() {
+            pauseTimer();
+            state.currentRound = 1;
+            state.isBreak = false;
+            state.timeRemaining = state.sessionDuration * 60;
+            updateDisplay();
+        }
+
+        // Event Listeners
+        startBtn.addEventListener('click', () => {
+            if (state.isRunning) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        });
+
+        resetBtn.addEventListener('click', resetTimer);
+
+        durationBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (state.isRunning) return;
+
+                durationBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                state.sessionDuration = parseInt(btn.dataset.duration);
+                if (!state.isBreak) {
+                    state.timeRemaining = state.sessionDuration * 60;
+                }
+                updateDisplay();
+            });
+        });
+
+        youtubeInput.addEventListener('change', () => {
+            const videoId = extractVideoId(youtubeInput.value);
+            if (videoId) {
+                youtubeStatus.textContent = 'Loading...';
+                initYoutubePlayer(videoId);
+            } else if (youtubeInput.value) {
+                youtubeStatus.textContent = 'Invalid YouTube URL';
+            } else {
+                youtubeStatus.textContent = '';
+            }
+        });
+
+        // Initialize
+        updateDisplay();
+    </script>
+</body>
+</html>
