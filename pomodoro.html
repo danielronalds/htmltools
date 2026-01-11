@@ -221,6 +221,8 @@
     <div id="youtube-player"></div>
 
     <script>
+        const STORAGE_KEY = 'pomodoro-state';
+
         // State
         const state = {
             sessionDuration: 25,
@@ -235,6 +237,41 @@
             youtubePlayer: null,
             youtubeReady: false
         };
+
+        // localStorage functions
+        function saveState() {
+            const toSave = {
+                sessionDuration: state.sessionDuration,
+                youtubeUrl: document.getElementById('youtube-url').value,
+                currentRound: state.currentRound
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.sessionDuration) {
+                        state.sessionDuration = parsed.sessionDuration;
+                        state.timeRemaining = parsed.sessionDuration * 60;
+                    }
+                    if (parsed.currentRound) {
+                        state.currentRound = parsed.currentRound;
+                    }
+                    if (parsed.youtubeUrl) {
+                        document.getElementById('youtube-url').value = parsed.youtubeUrl;
+                    }
+                } catch (e) {
+                    console.error('Failed to load saved state:', e);
+                }
+            }
+        }
+
+        function clearState() {
+            localStorage.removeItem(STORAGE_KEY);
+        }
 
         // DOM Elements
         const timerDisplay = document.getElementById('timer-display');
@@ -364,6 +401,7 @@
             state.timeRemaining = (isLongBreak ? state.longBreakDuration : state.shortBreakDuration) * 60;
 
             updateDisplay();
+            saveState();
         }
 
         // Switch to work mode
@@ -384,6 +422,7 @@
             }
 
             updateDisplay();
+            saveState();
         }
 
         // Start timer
@@ -410,9 +449,20 @@
         // Reset timer
         function resetTimer() {
             pauseTimer();
+            state.sessionDuration = 25;
             state.currentRound = 1;
             state.isBreak = false;
             state.timeRemaining = state.sessionDuration * 60;
+            youtubeInput.value = '';
+            youtubeStatus.textContent = '';
+            if (state.youtubePlayer) {
+                state.youtubePlayer.destroy();
+                state.youtubePlayer = null;
+            }
+            // Reset duration buttons
+            durationBtns.forEach(b => b.classList.remove('active'));
+            document.querySelector('[data-duration="25"]').classList.add('active');
+            clearState();
             updateDisplay();
         }
 
@@ -439,6 +489,7 @@
                     state.timeRemaining = state.sessionDuration * 60;
                 }
                 updateDisplay();
+                saveState();
             });
         });
 
@@ -452,9 +503,37 @@
             } else {
                 youtubeStatus.textContent = '';
             }
+            saveState();
         });
 
         // Initialize
+        loadState();
+
+        // Update duration button UI based on loaded state
+        durationBtns.forEach(b => {
+            b.classList.remove('active');
+            if (parseInt(b.dataset.duration) === state.sessionDuration) {
+                b.classList.add('active');
+            }
+        });
+
+        // Initialize YouTube player if URL was saved
+        const savedUrl = youtubeInput.value;
+        if (savedUrl) {
+            const videoId = extractVideoId(savedUrl);
+            if (videoId && state.youtubeReady) {
+                initYoutubePlayer(videoId);
+            } else if (videoId) {
+                // Wait for YouTube API to be ready
+                const checkReady = setInterval(() => {
+                    if (state.youtubeReady) {
+                        clearInterval(checkReady);
+                        initYoutubePlayer(videoId);
+                    }
+                }, 100);
+            }
+        }
+
         updateDisplay();
     </script>
 </body>
