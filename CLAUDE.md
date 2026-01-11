@@ -45,3 +45,11 @@ python3 -m http.server 8000
 
 - State persistence uses `localStorage` with a tool-specific key (e.g., `pomodoro-state`)
 - Tool pages include a fixed-position back button in the top-left corner
+- Pressing Escape returns to `index.html` - add this handler to each tool:
+```javascript
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        window.location.href = 'index.html';
+    }
+});
+```
