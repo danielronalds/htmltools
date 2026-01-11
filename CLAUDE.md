@@ -103,3 +103,40 @@ themeToggle.addEventListener('click', () => {
     setTheme(!document.body.classList.contains('light-mode'));
 });
 ```
+
+## Tool-Specific Theming
+
+Each tool should have its own accent color (the same color used for its icon on `index.html`). Apply this color to theming as follows:
+
+**Dark mode background:** Use a gradient based on the tool's accent color:
+```css
+body {
+    background: linear-gradient(135deg, <darker-shade> 0%, <medium-shade> 50%, <accent-color> 100%);
+}
+```
+
+**Light mode:** Use the standard light background, but style interactive elements (buttons, back button, theme toggle) with a transparent background and the accent color as text:
+```css
+body.light-mode {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 50%, #d5dbe1 100%);
+    color: #1a1a2e;
+}
+
+body.light-mode .back-btn,
+body.light-mode .theme-toggle,
+body.light-mode button {
+    background: rgba(<accent-rgb>, 0.1);
+    border-color: transparent;
+    color: <accent-color>;
+}
+
+body.light-mode .back-btn:hover,
+body.light-mode .theme-toggle:hover,
+body.light-mode button:hover {
+    background: rgba(<accent-rgb>, 0.2);
+}
+```
+
+Example for scratchpad (accent color `#f0ad4e` / `rgb(240, 173, 78)`):
+- Dark mode gradient: `#c48a2a` → `#d9993a` → `#f0ad4e`
+- Light mode buttons: `background: rgba(240, 173, 78, 0.1)`, `color: #f0ad4e`, hover: `rgba(240, 173, 78, 0.2)`
