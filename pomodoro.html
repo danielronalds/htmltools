@@ -29,6 +29,11 @@
             background: linear-gradient(135deg, #4c9195 0%, #3d8387 50%, #2e7579 100%);
         }
 
+        body.light-mode {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 50%, #d5dbe1 100%);
+            color: #333;
+        }
+
         .container {
             text-align: center;
             padding: 2rem;
@@ -186,6 +191,110 @@
         .back-btn:hover {
             background: rgba(255, 255, 255, 0.2);
         }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        body.light-mode .theme-toggle {
+            background: rgba(217, 85, 80, 0.1);
+            color: #d95550;
+        }
+
+        body.light-mode .theme-toggle:hover {
+            background: rgba(217, 85, 80, 0.2);
+        }
+
+        body.light-mode .container {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        body.light-mode .session-type,
+        body.light-mode .timer-display {
+            color: #333;
+        }
+
+        body.light-mode .round-counter {
+            color: rgba(51, 51, 51, 0.8);
+        }
+
+        body.light-mode .duration-btn {
+            border-color: rgba(51, 51, 51, 0.5);
+            color: #333;
+        }
+
+        body.light-mode .duration-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .duration-btn.active {
+            background: #d95550;
+            color: white;
+            border-color: #d95550;
+        }
+
+        body.light-mode .start-btn {
+            background: #d95550;
+            color: white;
+        }
+
+        body.light-mode .reset-btn {
+            background: rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        body.light-mode .youtube-section {
+            border-top-color: rgba(51, 51, 51, 0.2);
+        }
+
+        body.light-mode .youtube-label {
+            color: rgba(51, 51, 51, 0.9);
+        }
+
+        body.light-mode .youtube-input {
+            border-color: rgba(51, 51, 51, 0.3);
+            background: rgba(255, 255, 255, 0.3);
+            color: #333;
+        }
+
+        body.light-mode .youtube-input::placeholder {
+            color: rgba(51, 51, 51, 0.5);
+        }
+
+        body.light-mode .youtube-input:focus {
+            border-color: rgba(51, 51, 51, 0.5);
+        }
+
+        body.light-mode .youtube-status {
+            color: rgba(51, 51, 51, 0.7);
+        }
+
+        body.light-mode .back-btn {
+            background: rgba(217, 85, 80, 0.1);
+            color: #d95550;
+        }
+
+        body.light-mode .back-btn:hover {
+            background: rgba(217, 85, 80, 0.2);
+        }
     </style>
 </head>
 <body class="work-mode">
@@ -193,6 +302,10 @@
         <i class="fa-solid fa-arrow-left"></i>
         <span>Back to Tools</span>
     </a>
+
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <i class="fa-solid fa-sun"></i>
+    </button>
 
     <div class="container">
         <div class="session-type" id="session-type">Work Session</div>
@@ -221,6 +334,26 @@
     <div id="youtube-player"></div>
 
     <script>
+        const THEME_KEY = 'theme-preference';
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = themeToggle.querySelector('i');
+
+        function setTheme(isLight) {
+            document.body.classList.toggle('light-mode', isLight);
+            themeIcon.className = isLight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+            localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        if (savedTheme === 'light') {
+            setTheme(true);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            setTheme(!document.body.classList.contains('light-mode'));
+        });
+
         const STORAGE_KEY = 'pomodoro-state';
 
         // State

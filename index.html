@@ -18,6 +18,12 @@
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             color: white;
             padding: 2rem;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        body.light-mode {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 50%, #d5dbe1 100%);
+            color: #1a1a2e;
         }
 
         .container {
@@ -123,9 +129,83 @@
         .tool-card.hidden {
             display: none;
         }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.light-mode .theme-toggle {
+            background: rgba(0, 0, 0, 0.05);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #1a1a2e;
+        }
+
+        body.light-mode .theme-toggle:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .subtitle {
+            color: rgba(26, 26, 46, 0.6);
+        }
+
+        body.light-mode .tool-card {
+            background: rgba(0, 0, 0, 0.03);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #1a1a2e;
+        }
+
+        body.light-mode .tool-card:hover {
+            background: rgba(0, 0, 0, 0.06);
+            border-color: rgba(0, 0, 0, 0.15);
+        }
+
+        body.light-mode .tool-description {
+            color: rgba(26, 26, 46, 0.5);
+        }
+
+        body.light-mode .search-input {
+            background: rgba(0, 0, 0, 0.03);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #1a1a2e;
+        }
+
+        body.light-mode .search-input::placeholder {
+            color: rgba(26, 26, 46, 0.4);
+        }
+
+        body.light-mode .search-input:focus {
+            border-color: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .search-icon {
+            color: rgba(26, 26, 46, 0.4);
+        }
     </style>
 </head>
 <body>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <i class="fa-solid fa-sun"></i>
+    </button>
+
     <div class="container">
         <header>
             <h1>Tools</h1>
@@ -147,6 +227,26 @@
     </div>
 
     <script>
+        const THEME_KEY = 'theme-preference';
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = themeToggle.querySelector('i');
+
+        function setTheme(isLight) {
+            document.body.classList.toggle('light-mode', isLight);
+            themeIcon.className = isLight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+            localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        if (savedTheme === 'light') {
+            setTheme(true);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            setTheme(!document.body.classList.contains('light-mode'));
+        });
+
         const searchInput = document.getElementById('search-input');
         const toolCards = document.querySelectorAll('.tool-card');
 

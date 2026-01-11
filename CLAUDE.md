@@ -53,3 +53,53 @@ document.addEventListener('keydown', (e) => {
     }
 });
 ```
+- Light/dark mode toggle is shared across all pages using `localStorage` key `theme-preference`. Add this to each tool:
+
+**HTML** (place after back button):
+```html
+<button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+    <i class="fa-solid fa-sun"></i>
+</button>
+```
+
+**CSS** (theme toggle button styles):
+```css
+.theme-toggle {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.2s ease;
+}
+body.light-mode .theme-toggle {
+    background: rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+```
+
+**JavaScript** (place at start of script):
+```javascript
+const THEME_KEY = 'theme-preference';
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = themeToggle.querySelector('i');
+
+function setTheme(isLight) {
+    document.body.classList.toggle('light-mode', isLight);
+    themeIcon.className = isLight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+    localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+}
+
+const savedTheme = localStorage.getItem(THEME_KEY);
+if (savedTheme === 'light') setTheme(true);
+
+themeToggle.addEventListener('click', () => {
+    setTheme(!document.body.classList.contains('light-mode'));
+});
+```
