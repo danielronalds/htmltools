@@ -404,7 +404,11 @@
             const toSave = {
                 sessionDuration: state.sessionDuration,
                 youtubeUrl: document.getElementById('youtube-url').value,
-                currentRound: state.currentRound
+                currentRound: state.currentRound,
+                timeRemaining: state.timeRemaining,
+                isBreak: state.isBreak,
+                isRunning: state.isRunning,
+                lastSaveTime: Date.now()
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
         }
@@ -416,13 +420,42 @@
                     const parsed = JSON.parse(saved);
                     if (parsed.sessionDuration) {
                         state.sessionDuration = parsed.sessionDuration;
-                        state.timeRemaining = parsed.sessionDuration * 60;
                     }
                     if (parsed.currentRound) {
                         state.currentRound = parsed.currentRound;
                     }
                     if (parsed.youtubeUrl) {
                         document.getElementById('youtube-url').value = parsed.youtubeUrl;
+                    }
+                    if (typeof parsed.isBreak === 'boolean') {
+                        state.isBreak = parsed.isBreak;
+                    }
+                    if (typeof parsed.timeRemaining === 'number') {
+                        state.timeRemaining = parsed.timeRemaining;
+
+                        // Account for elapsed time if timer was running
+                        if (parsed.isRunning && parsed.lastSaveTime) {
+                            const elapsedSeconds = Math.floor((Date.now() - parsed.lastSaveTime) / 1000);
+                            state.timeRemaining = Math.max(0, state.timeRemaining - elapsedSeconds);
+                        }
+                    } else {
+                        // Fallback for old saved data without timeRemaining
+                        state.timeRemaining = state.sessionDuration * 60;
+                    }
+                    if (parsed.isRunning) {
+                        // Auto-start the timer after initialization
+                        setTimeout(() => {
+                            if (state.timeRemaining > 0) {
+                                startTimer();
+                            } else {
+                                // Timer expired while page was closed
+                                if (state.isBreak) {
+                                    switchToWork();
+                                } else {
+                                    switchToBreak();
+                                }
+                            }
+                        }, 0);
                     }
                 } catch (e) {
                     console.error('Failed to load saved state:', e);
@@ -550,6 +583,7 @@
             }
 
             updateDisplay();
+            saveState();
         }
 
         // Switch to break mode
@@ -596,6 +630,7 @@
             }
 
             updateDisplay();
+            saveState();
         }
 
         // Pause timer
@@ -605,6 +640,7 @@
             state.intervalId = null;
             pauseAudio();
             updateDisplay();
+            saveState();
         }
 
         // Reset timer
