@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Identity Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6a3d7d 0%, #7d4a91 50%, #9b59b6 100%);
+            color: white;
+            padding: 2rem;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        body.light-mode {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 50%, #d5dbe1 100%);
+            color: #1a1a2e;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: background 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.light-mode .back-btn {
+            background: rgba(155, 89, 182, 0.1);
+            border-color: transparent;
+            color: #9b59b6;
+        }
+
+        body.light-mode .back-btn:hover {
+            background: rgba(155, 89, 182, 0.2);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.light-mode .theme-toggle {
+            background: rgba(155, 89, 182, 0.1);
+            border-color: transparent;
+            color: #9b59b6;
+        }
+
+        body.light-mode .theme-toggle:hover {
+            background: rgba(155, 89, 182, 0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 4rem auto 2rem;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .input-section {
+                position: static !important;
+            }
+        }
+
+        .input-section {
+            position: sticky;
+            top: 5rem;
+        }
+
+        .output-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .input-section .generate-btn {
+            margin-top: 1.5rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        body.light-mode .card {
+            background: rgba(255, 255, 255, 0.5);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .config-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .config-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .config-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        body.light-mode .config-label {
+            color: rgba(26, 26, 46, 0.7);
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .toggle-btn.active {
+            background: rgba(155, 89, 182, 0.4);
+            border-color: #9b59b6;
+        }
+
+        body.light-mode .toggle-btn {
+            background: rgba(155, 89, 182, 0.05);
+            border-color: rgba(155, 89, 182, 0.2);
+            color: #1a1a2e;
+        }
+
+        body.light-mode .toggle-btn:hover {
+            background: rgba(155, 89, 182, 0.1);
+        }
+
+        body.light-mode .toggle-btn.active {
+            background: rgba(155, 89, 182, 0.2);
+            border-color: #9b59b6;
+            color: #9b59b6;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .text-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .text-input:focus {
+            border-color: #9b59b6;
+        }
+
+        body.light-mode .text-input {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #1a1a2e;
+        }
+
+        body.light-mode .text-input::placeholder {
+            color: rgba(26, 26, 46, 0.4);
+        }
+
+        body.light-mode .text-input:focus {
+            border-color: #9b59b6;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider-value {
+            min-width: 2.5rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .slider {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #9b59b6;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #9b59b6;
+            cursor: pointer;
+            border: none;
+        }
+
+        body.light-mode .slider {
+            background: rgba(155, 89, 182, 0.2);
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            background: #9b59b6;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .generate-btn:hover {
+            background: #8e44ad;
+            transform: translateY(-2px);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        body.light-mode .generate-btn {
+            background: #9b59b6;
+            color: white;
+        }
+
+        body.light-mode .generate-btn:hover {
+            background: #8e44ad;
+        }
+
+        .identity-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .identity-field:last-child {
+            border-bottom: none;
+        }
+
+        body.light-mode .identity-field {
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .field-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .field-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 0.25rem;
+        }
+
+        body.light-mode .field-label {
+            color: rgba(26, 26, 46, 0.5);
+        }
+
+        .field-value {
+            font-size: 0.95rem;
+            word-break: break-all;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+        }
+
+        .copy-field-btn {
+            flex-shrink: 0;
+            padding: 0.4rem 0.6rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: 0.75rem;
+        }
+
+        .copy-field-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .copy-field-btn.copied {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: rgba(76, 175, 80, 0.5);
+        }
+
+        body.light-mode .copy-field-btn {
+            background: rgba(155, 89, 182, 0.1);
+            border-color: transparent;
+            color: #9b59b6;
+        }
+
+        body.light-mode .copy-field-btn:hover {
+            background: rgba(155, 89, 182, 0.2);
+        }
+
+        body.light-mode .copy-field-btn.copied {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .copy-markdown-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .copy-markdown-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .copy-markdown-btn.copied {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: rgba(76, 175, 80, 0.5);
+        }
+
+        body.light-mode .copy-markdown-btn {
+            background: rgba(155, 89, 182, 0.1);
+            border-color: transparent;
+            color: #9b59b6;
+        }
+
+        body.light-mode .copy-markdown-btn:hover {
+            background: rgba(155, 89, 182, 0.2);
+        }
+
+        body.light-mode .copy-markdown-btn.copied {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .history-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .history-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        body.light-mode .history-toggle {
+            color: #1a1a2e;
+        }
+
+        .history-content {
+            margin-top: 1rem;
+        }
+
+        .history-content.hidden {
+            display: none;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .history-item:last-child {
+            margin-bottom: 0;
+        }
+
+        body.light-mode .history-item {
+            background: rgba(155, 89, 182, 0.05);
+        }
+
+        .history-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .history-item-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .history-item-company {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        body.light-mode .history-item-company {
+            color: rgba(26, 26, 46, 0.5);
+        }
+
+        .history-item-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .history-copy-btn,
+        .history-delete-btn {
+            padding: 0.4rem 0.6rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .history-copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .history-delete-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .history-copy-btn.copied {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: rgba(76, 175, 80, 0.5);
+        }
+
+        body.light-mode .history-copy-btn,
+        body.light-mode .history-delete-btn {
+            background: rgba(155, 89, 182, 0.1);
+            border-color: transparent;
+            color: #9b59b6;
+        }
+
+        body.light-mode .history-copy-btn:hover {
+            background: rgba(155, 89, 182, 0.2);
+        }
+
+        body.light-mode .history-delete-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        body.light-mode .history-copy-btn.copied {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .clear-history-btn {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            border-radius: 8px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1rem;
+        }
+
+        .clear-history-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: rgba(239, 68, 68, 0.7);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        body.light-mode .empty-state {
+            color: rgba(26, 26, 46, 0.5);
+        }
+
+        .no-history {
+            text-align: center;
+            padding: 1rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+        }
+
+        body.light-mode .no-history {
+            color: rgba(26, 26, 46, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Back to Tools</span>
+    </a>
+
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <i class="fa-solid fa-sun"></i>
+    </button>
+
+    <div class="container">
+        <h1><i class="fa-solid fa-user-secret"></i> Identity Generator</h1>
+
+        <div class="main-content">
+            <div class="input-section">
+                <div class="card">
+                    <div class="card-title"><i class="fa-solid fa-cog"></i> Configuration</div>
+
+                    <div class="config-row">
+                        <div class="config-label">Company Type</div>
+                        <div class="toggle-group">
+                            <button class="toggle-btn active" data-type="local">Local Business</button>
+                            <button class="toggle-btn" data-type="tech">Tech Company</button>
+                        </div>
+                    </div>
+
+                    <div class="config-row">
+                        <div class="config-label">Base Email</div>
+                        <input type="email" class="text-input" id="base-email" placeholder="your.email@domain.com">
+                    </div>
+
+                    <div class="config-row">
+                        <div class="config-label">Password Length</div>
+                        <div class="slider-row">
+                            <span class="slider-value" id="password-length-value">16</span>
+                            <input type="range" class="slider" id="password-length" min="12" max="32" value="16">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="generate-btn" id="generate-btn">
+                    <i class="fa-solid fa-shuffle"></i>
+                    Generate New Identity
+                </button>
+            </div>
+
+            <div class="output-section">
+                <div class="card" id="identity-card" style="display: none;">
+                    <div class="card-title"><i class="fa-solid fa-id-card"></i> Current Identity</div>
+
+                    <div class="identity-field">
+                        <div class="field-info">
+                            <div class="field-label">Full Name</div>
+                            <div class="field-value" id="field-name"></div>
+                        </div>
+                        <button class="copy-field-btn" data-field="name"><i class="fa-solid fa-copy"></i></button>
+                    </div>
+
+                    <div class="identity-field">
+                        <div class="field-info">
+                            <div class="field-label">Company</div>
+                            <div class="field-value" id="field-company"></div>
+                        </div>
+                        <button class="copy-field-btn" data-field="company"><i class="fa-solid fa-copy"></i></button>
+                    </div>
+
+                    <div class="identity-field">
+                        <div class="field-info">
+                            <div class="field-label">Username</div>
+                            <div class="field-value" id="field-username"></div>
+                        </div>
+                        <button class="copy-field-btn" data-field="username"><i class="fa-solid fa-copy"></i></button>
+                    </div>
+
+                    <div class="identity-field">
+                        <div class="field-info">
+                            <div class="field-label">Email</div>
+                            <div class="field-value" id="field-email"></div>
+                        </div>
+                        <button class="copy-field-btn" data-field="email"><i class="fa-solid fa-copy"></i></button>
+                    </div>
+
+                    <div class="identity-field">
+                        <div class="field-info">
+                            <div class="field-label">Password</div>
+                            <div class="field-value" id="field-password"></div>
+                        </div>
+                        <button class="copy-field-btn" data-field="password"><i class="fa-solid fa-copy"></i></button>
+                    </div>
+
+                    <button class="copy-markdown-btn" id="copy-markdown-btn">
+                        <i class="fa-solid fa-table"></i>
+                        Copy as Markdown Table
+                    </button>
+                </div>
+
+                <div class="card" id="history-card">
+                    <div class="history-header" id="history-header">
+                        <div class="card-title" style="margin-bottom: 0;"><i class="fa-solid fa-clock-rotate-left"></i> History</div>
+                        <button class="history-toggle" id="history-toggle"><i class="fa-solid fa-chevron-down"></i></button>
+                    </div>
+                    <div class="history-content" id="history-content">
+                        <div class="no-history" id="no-history">No identities generated yet</div>
+                        <div id="history-list"></div>
+                        <button class="clear-history-btn" id="clear-history-btn" style="display: none;">
+                            <i class="fa-solid fa-trash"></i> Clear History
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Storage keys
+        const CONFIG_KEY = 'identity-generator-config';
+        const HISTORY_KEY = 'identity-generator-history';
+        const THEME_KEY = 'theme-preference';
+
+        // Name pools
+        const firstNames = [
+            'James', 'Mary', 'Michael', 'Patricia', 'Robert', 'Jennifer', 'David', 'Linda',
+            'William', 'Elizabeth', 'Richard', 'Barbara', 'Joseph', 'Susan', 'Thomas', 'Jessica',
+            'Christopher', 'Sarah', 'Daniel', 'Karen', 'Matthew', 'Lisa', 'Anthony', 'Nancy',
+            'Mark', 'Betty', 'Steven', 'Margaret', 'Paul', 'Sandra'
+        ];
+
+        const lastNames = [
+            'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
+            'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson',
+            'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson',
+            'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson'
+        ];
+
+        // Local business components
+        const localAdjectives = ['Pine', 'Oak', 'Golden', 'Silver', 'Blue', 'Green', 'Red', 'Sunny', 'Cozy', 'Happy', 'Rustic', 'Village', 'Mountain', 'Harbor', 'River'];
+        const localNouns = ['Mountain', 'River', 'Valley', 'Harbor', 'Bay', 'Lake', 'Forest', 'Meadow', 'Hill', 'Creek', 'Stone', 'Leaf', 'Star', 'Moon', 'Sun'];
+        const localTypes = ['Coffee Shop', 'Bakery', 'Bookstore', 'Restaurant', 'Cafe', 'Diner', 'Bistro', 'Grill', 'Kitchen', 'Pub', 'Bar', 'Boutique', 'Gallery', 'Studio', 'Market'];
+
+        // Tech company components
+        const techPrefixes = ['Nexus', 'Cloud', 'Data', 'Cyber', 'Quantum', 'Nova', 'Pulse', 'Spark', 'Flux', 'Sync', 'Core', 'Apex', 'Vero', 'Pixel', 'Logic'];
+        const techSuffixes = ['AI', 'Labs', 'Tech', 'Sync', 'Flow', 'Hub', 'Link', 'Works', 'Mind', 'Wave', 'Net', 'Byte', 'Cloud', 'Edge', 'Stack'];
+
+        // Password characters
+        const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const numbers = '0123456789';
+        const symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+        // State
+        let currentIdentity = null;
+        let history = [];
+        let config = {
+            companyType: 'local',
+            baseEmail: '',
+            passwordLength: 16
+        };
+
+        // DOM elements
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = themeToggle.querySelector('i');
+        const toggleBtns = document.querySelectorAll('.toggle-btn');
+        const baseEmailInput = document.getElementById('base-email');
+        const passwordLengthSlider = document.getElementById('password-length');
+        const passwordLengthValue = document.getElementById('password-length-value');
+        const generateBtn = document.getElementById('generate-btn');
+        const identityCard = document.getElementById('identity-card');
+        const copyMarkdownBtn = document.getElementById('copy-markdown-btn');
+        const historyHeader = document.getElementById('history-header');
+        const historyToggle = document.getElementById('history-toggle');
+        const historyContent = document.getElementById('history-content');
+        const historyList = document.getElementById('history-list');
+        const noHistory = document.getElementById('no-history');
+        const clearHistoryBtn = document.getElementById('clear-history-btn');
+
+        // Theme toggle
+        function setTheme(isLight) {
+            document.body.classList.toggle('light-mode', isLight);
+            themeIcon.className = isLight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+            localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+        }
+
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        if (savedTheme === 'light') setTheme(true);
+
+        themeToggle.addEventListener('click', () => {
+            setTheme(!document.body.classList.contains('light-mode'));
+        });
+
+        // Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Random helpers
+        function randomItem(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function generatePassword(length) {
+            const allChars = lowercase + uppercase + numbers + symbols;
+            let password = '';
+
+            // Ensure at least one of each type
+            password += randomItem(lowercase);
+            password += randomItem(uppercase);
+            password += randomItem(numbers);
+            password += randomItem(symbols);
+
+            // Fill the rest
+            for (let i = password.length; i < length; i++) {
+                password += randomItem(allChars);
+            }
+
+            // Shuffle
+            return password.split('').sort(() => Math.random() - 0.5).join('');
+        }
+
+        function generateLocalBusiness() {
+            return `The ${randomItem(localAdjectives)} ${randomItem(localTypes)}`;
+        }
+
+        function generateTechCompany() {
+            return `${randomItem(techPrefixes)}${randomItem(techSuffixes)}`;
+        }
+
+        function slugify(text) {
+            return text.toLowerCase().replace(/[^a-z0-9]/g, '');
+        }
+
+        function generateEmail(username, company, baseEmail) {
+            if (!baseEmail || !baseEmail.includes('@')) {
+                return '';
+            }
+            const [localPart, domain] = baseEmail.split('@');
+            const companySlug = slugify(company);
+            return `${localPart}+${username}-${companySlug}@${domain}`;
+        }
+
+        function generateIdentity() {
+            const firstName = randomItem(firstNames);
+            const lastName = randomItem(lastNames);
+            const fullName = `${firstName} ${lastName}`;
+            const company = config.companyType === 'local' ? generateLocalBusiness() : generateTechCompany();
+            const username = `${firstName[0].toLowerCase()}${lastName.toLowerCase()}`;
+            const email = generateEmail(username, company, config.baseEmail);
+            const password = generatePassword(config.passwordLength);
+
+            return { fullName, company, username, email, password };
+        }
+
+        // Display identity
+        function displayIdentity(identity) {
+            document.getElementById('field-name').textContent = identity.fullName;
+            document.getElementById('field-company').textContent = identity.company;
+            document.getElementById('field-username').textContent = identity.username;
+            document.getElementById('field-email').textContent = identity.email || '(set base email above)';
+            document.getElementById('field-password').textContent = identity.password;
+            identityCard.style.display = 'block';
+        }
+
+        // Copy functionality
+        async function copyToClipboard(text, btn) {
+            try {
+                await navigator.clipboard.writeText(text);
+                btn.classList.add('copied');
+                const icon = btn.querySelector('i');
+                if (icon) {
+                    icon.className = 'fa-solid fa-check';
+                }
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    if (icon) {
+                        icon.className = 'fa-solid fa-copy';
+                    }
+                }, 2000);
+            } catch (e) {
+                console.error('Failed to copy:', e);
+            }
+        }
+
+        function getMarkdownTable(identity) {
+            return `| Field | Value |
+|-------|-------|
+| Full Name | ${identity.fullName} |
+| Company | ${identity.company} |
+| Username | ${identity.username} |
+| Email | ${identity.email} |
+| Password | ${identity.password} |`;
+        }
+
+        // History management
+        function saveHistory() {
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+        }
+
+        function loadHistory() {
+            const saved = localStorage.getItem(HISTORY_KEY);
+            if (saved) {
+                try {
+                    history = JSON.parse(saved);
+                } catch (e) {
+                    history = [];
+                }
+            }
+        }
+
+        function renderHistory() {
+            if (history.length === 0) {
+                noHistory.style.display = 'block';
+                historyList.innerHTML = '';
+                clearHistoryBtn.style.display = 'none';
+                return;
+            }
+
+            noHistory.style.display = 'none';
+            clearHistoryBtn.style.display = 'block';
+
+            historyList.innerHTML = history.map((item, index) => `
+                <div class="history-item" data-index="${index}">
+                    <div class="history-item-info">
+                        <div class="history-item-name">${item.fullName}</div>
+                        <div class="history-item-company">${item.company}</div>
+                    </div>
+                    <div class="history-item-actions">
+                        <button class="history-copy-btn" data-index="${index}"><i class="fa-solid fa-copy"></i></button>
+                        <button class="history-delete-btn" data-index="${index}"><i class="fa-solid fa-times"></i></button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Attach event listeners
+            historyList.querySelectorAll('.history-copy-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const index = parseInt(btn.dataset.index);
+                    const markdown = getMarkdownTable(history[index]);
+                    await copyToClipboard(markdown, btn);
+                });
+            });
+
+            historyList.querySelectorAll('.history-delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const index = parseInt(btn.dataset.index);
+                    history.splice(index, 1);
+                    saveHistory();
+                    renderHistory();
+                });
+            });
+
+            historyList.querySelectorAll('.history-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const index = parseInt(item.dataset.index);
+                    currentIdentity = history[index];
+                    displayIdentity(currentIdentity);
+                });
+            });
+        }
+
+        // Config management
+        function saveConfig() {
+            localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+        }
+
+        function loadConfig() {
+            const saved = localStorage.getItem(CONFIG_KEY);
+            if (saved) {
+                try {
+                    config = { ...config, ...JSON.parse(saved) };
+                } catch (e) {
+                    // Use defaults
+                }
+            }
+        }
+
+        function applyConfig() {
+            // Company type
+            toggleBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.type === config.companyType);
+            });
+
+            // Base email
+            baseEmailInput.value = config.baseEmail;
+
+            // Password length
+            passwordLengthSlider.value = config.passwordLength;
+            passwordLengthValue.textContent = config.passwordLength;
+        }
+
+        // Event listeners
+        toggleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                toggleBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                config.companyType = btn.dataset.type;
+                saveConfig();
+            });
+        });
+
+        baseEmailInput.addEventListener('input', () => {
+            config.baseEmail = baseEmailInput.value;
+            saveConfig();
+        });
+
+        passwordLengthSlider.addEventListener('input', () => {
+            config.passwordLength = parseInt(passwordLengthSlider.value);
+            passwordLengthValue.textContent = config.passwordLength;
+            saveConfig();
+        });
+
+        generateBtn.addEventListener('click', () => {
+            currentIdentity = generateIdentity();
+            displayIdentity(currentIdentity);
+
+            // Add to history
+            history.unshift(currentIdentity);
+            if (history.length > 50) {
+                history = history.slice(0, 50);
+            }
+            saveHistory();
+            renderHistory();
+        });
+
+        document.querySelectorAll('.copy-field-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (!currentIdentity) return;
+                const field = btn.dataset.field;
+                const fieldMap = {
+                    name: currentIdentity.fullName,
+                    company: currentIdentity.company,
+                    username: currentIdentity.username,
+                    email: currentIdentity.email,
+                    password: currentIdentity.password
+                };
+                await copyToClipboard(fieldMap[field], btn);
+            });
+        });
+
+        copyMarkdownBtn.addEventListener('click', async () => {
+            if (!currentIdentity) return;
+            const markdown = getMarkdownTable(currentIdentity);
+            const icon = copyMarkdownBtn.querySelector('i');
+            const span = copyMarkdownBtn.querySelector('span') || copyMarkdownBtn;
+
+            try {
+                await navigator.clipboard.writeText(markdown);
+                copyMarkdownBtn.classList.add('copied');
+                icon.className = 'fa-solid fa-check';
+                copyMarkdownBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+
+                setTimeout(() => {
+                    copyMarkdownBtn.classList.remove('copied');
+                    copyMarkdownBtn.innerHTML = '<i class="fa-solid fa-table"></i> Copy as Markdown Table';
+                }, 2000);
+            } catch (e) {
+                console.error('Failed to copy:', e);
+            }
+        });
+
+        historyHeader.addEventListener('click', () => {
+            historyToggle.classList.toggle('collapsed');
+            historyContent.classList.toggle('hidden');
+        });
+
+        clearHistoryBtn.addEventListener('click', () => {
+            history = [];
+            saveHistory();
+            renderHistory();
+        });
+
+        // Initialize
+        loadConfig();
+        applyConfig();
+        loadHistory();
+        renderHistory();
+    </script>
+</body>
+</html>
