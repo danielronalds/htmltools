@@ -530,6 +530,10 @@
                 events: {
                     onReady: () => {
                         youtubeStatus.textContent = 'Audio ready';
+                        // Auto-play if timer is running and not on break
+                        if (state.isRunning && !state.isBreak) {
+                            playAudio();
+                        }
                     },
                     onError: (e) => {
                         youtubeStatus.textContent = 'Error loading video';
