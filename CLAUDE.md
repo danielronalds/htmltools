@@ -140,3 +140,27 @@ body.light-mode button:hover {
 Example for scratchpad (accent color `#f0ad4e` / `rgb(240, 173, 78)`):
 - Dark mode gradient: `#c48a2a` → `#d9993a` → `#f0ad4e`
 - Light mode buttons: `background: rgba(240, 173, 78, 0.1)`, `color: #f0ad4e`, hover: `rgba(240, 173, 78, 0.2)`
+
+## Git Commits
+
+Use conventional commits format:
+
+**Tool-specific changes:** `type(tool-name): description`
+```
+feat(pomodoro-timer): add youtube audio support
+fix(scratchpad): add support for tabs
+```
+
+**General changes:** `type: description`
+```
+docs: add readme
+chore: add mise toml
+```
+
+**Types:**
+- `feat` - new feature or functionality
+- `fix` - bug fix
+- `docs` - documentation only
+- `chore` - maintenance, config, or non-code changes
+
+Keep descriptions lowercase and concise. Single line only - no body or extended description.
