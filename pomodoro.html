@@ -654,16 +654,10 @@
             state.currentRound = 1;
             state.isBreak = false;
             state.timeRemaining = state.sessionDuration * 60;
-            youtubeInput.value = '';
-            youtubeStatus.textContent = '';
-            if (state.youtubePlayer) {
-                state.youtubePlayer.destroy();
-                state.youtubePlayer = null;
-            }
             // Reset duration buttons
             durationBtns.forEach(b => b.classList.remove('active'));
             document.querySelector('[data-duration="25"]').classList.add('active');
-            clearState();
+            saveState();
             updateDisplay();
         }
 
