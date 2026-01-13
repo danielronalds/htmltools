@@ -114,16 +114,11 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 16px;
             overflow: hidden;
             min-height: 0;
-        }
-
-        body.light-mode .editor-container {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(0, 0, 0, 0.1);
         }
 
         .textarea-wrapper {
@@ -139,7 +134,7 @@
             padding: 1.5rem;
             border: none;
             background: transparent;
-            color: white;
+            color: #1a1a2e;
             font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
             font-size: 1rem;
             line-height: 1.6;
@@ -149,14 +144,6 @@
         }
 
         textarea::placeholder {
-            color: rgba(255, 255, 255, 0.3);
-        }
-
-        body.light-mode textarea {
-            color: #1a1a2e;
-        }
-
-        body.light-mode textarea::placeholder {
             color: rgba(26, 26, 46, 0.3);
         }
 
@@ -165,19 +152,11 @@
             justify-content: space-between;
             align-items: center;
             padding: 0.75rem 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        body.light-mode .footer-bar {
-            border-top-color: rgba(0, 0, 0, 0.1);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .stats {
             font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        body.light-mode .stats {
             color: rgba(26, 26, 46, 0.5);
         }
 
@@ -186,37 +165,27 @@
             align-items: center;
             gap: 0.5rem;
             padding: 0.5rem 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: none;
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
+            background: rgba(240, 173, 78, 0.1);
+            color: #f0ad4e;
             font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
         .copy-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .copy-btn.copied {
-            background: rgba(76, 175, 80, 0.3);
-            border-color: rgba(76, 175, 80, 0.5);
-        }
-
-        body.light-mode .copy-btn {
-            background: rgba(240, 173, 78, 0.1);
-            border-color: transparent;
-            color: #f0ad4e;
-        }
-
-        body.light-mode .copy-btn:hover {
             background: rgba(240, 173, 78, 0.2);
         }
 
-        body.light-mode .copy-btn.copied {
+        .copy-btn.copied {
             background: rgba(92, 184, 92, 0.2);
             color: #5cb85c;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
         }
     </style>
 </head>
@@ -238,10 +207,16 @@
             </div>
             <div class="footer-bar">
                 <div class="stats" id="stats">0 characters, 0 words</div>
-                <button class="copy-btn" id="copy-btn">
-                    <i class="fa-solid fa-link"></i>
-                    <span>Copy Share Link</span>
-                </button>
+                <div class="button-group">
+                    <button class="copy-btn" id="copy-content-btn">
+                        <i class="fa-solid fa-copy"></i>
+                        <span>Copy</span>
+                    </button>
+                    <button class="copy-btn" id="copy-btn">
+                        <i class="fa-solid fa-link"></i>
+                        <span>Copy Share Link</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -254,6 +229,7 @@
         const editor = document.getElementById('editor');
         const stats = document.getElementById('stats');
         const copyBtn = document.getElementById('copy-btn');
+        const copyContentBtn = document.getElementById('copy-content-btn');
 
         // Theme management
         function setTheme(isLight) {
@@ -357,6 +333,24 @@
             }
         }
 
+        // Copy content to clipboard
+        async function copyContent() {
+            const text = editor.value;
+
+            try {
+                await navigator.clipboard.writeText(text);
+                copyContentBtn.classList.add('copied');
+                copyContentBtn.querySelector('span').textContent = 'Copied!';
+
+                setTimeout(() => {
+                    copyContentBtn.classList.remove('copied');
+                    copyContentBtn.querySelector('span').textContent = 'Copy';
+                }, 2000);
+            } catch (e) {
+                console.error('Failed to copy:', e);
+            }
+        }
+
         // Handle Tab key to insert tab character
         editor.addEventListener('keydown', (e) => {
             if (e.key === 'Tab') {
@@ -379,6 +373,7 @@
         });
 
         copyBtn.addEventListener('click', copyShareLink);
+        copyContentBtn.addEventListener('click', copyContent);
 
         // Initialize
         loadContent();
