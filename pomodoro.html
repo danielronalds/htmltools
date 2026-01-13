@@ -323,6 +323,212 @@
         body.light-mode.break-mode .back-btn:hover {
             background: rgba(76, 145, 149, 0.2);
         }
+
+        /* YouTube input wrapper */
+        .youtube-input-wrapper {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .youtube-input-wrapper .youtube-input {
+            flex: 1;
+        }
+
+        .history-btn {
+            padding: 0 0.75rem;
+            border: none;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .history-btn:hover {
+            transform: scale(1.05);
+        }
+
+        body.light-mode .history-btn {
+            background: #d95550;
+            color: white;
+        }
+
+        body.light-mode.break-mode .history-btn {
+            background: #4c9195;
+        }
+
+        /* History dialog */
+        .history-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            margin: 0;
+            border: none;
+            border-radius: 16px;
+            background: rgba(180, 60, 55, 0.95);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+        }
+
+        body.break-mode .history-dialog {
+            background: rgba(45, 115, 120, 0.95);
+        }
+
+        .history-dialog::backdrop {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .history-header h2 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.25rem;
+            transition: color 0.2s ease;
+        }
+
+        .close-btn:hover {
+            color: white;
+        }
+
+        .history-list {
+            max-height: 50vh;
+            overflow-y: auto;
+            padding: 0.5rem 0;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .history-item-url {
+            flex: 1;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-right: 0.5rem;
+        }
+
+        .history-item-delete {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0.25rem 0.5rem;
+            transition: opacity 0.2s ease;
+            opacity: 0.7;
+        }
+
+        .history-item-delete:hover {
+            opacity: 1;
+        }
+
+        .history-empty {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .history-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .clear-history-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .clear-history-btn:hover {
+            transform: scale(1.02);
+        }
+
+        body.light-mode .clear-history-btn {
+            background: #d95550;
+            color: white;
+        }
+
+        body.light-mode.break-mode .clear-history-btn {
+            background: #4c9195;
+        }
+
+        /* Light mode dialog */
+        body.light-mode .history-dialog {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+        }
+
+        body.light-mode .history-header {
+            border-bottom-color: rgba(51, 51, 51, 0.1);
+        }
+
+        body.light-mode .close-btn {
+            color: rgba(51, 51, 51, 0.7);
+        }
+
+        body.light-mode .close-btn:hover {
+            color: #333;
+        }
+
+        body.light-mode .history-item:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .history-item-url {
+            color: #333;
+        }
+
+        body.light-mode .history-item-delete {
+            color: #333;
+        }
+
+        body.light-mode .history-empty {
+            color: rgba(51, 51, 51, 0.5);
+        }
+
+        body.light-mode .history-footer {
+            border-top-color: rgba(51, 51, 51, 0.1);
+        }
     </style>
 </head>
 <body class="work-mode">
@@ -354,10 +560,28 @@
 
         <div class="youtube-section">
             <label class="youtube-label" for="youtube-url">YouTube URL (audio will play during work sessions)</label>
-            <input type="text" id="youtube-url" class="youtube-input" placeholder="https://www.youtube.com/watch?v=...">
+            <div class="youtube-input-wrapper">
+                <input type="text" id="youtube-url" class="youtube-input" placeholder="https://www.youtube.com/watch?v=...">
+                <button id="history-btn" class="history-btn" title="YouTube URL History">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </button>
+            </div>
             <div class="youtube-status" id="youtube-status"></div>
         </div>
     </div>
+
+    <dialog id="history-dialog" class="history-dialog">
+        <div class="history-header">
+            <h2>YouTube URL History</h2>
+            <button id="close-history" class="close-btn">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div id="history-list" class="history-list"></div>
+        <div class="history-footer">
+            <button id="clear-history" class="clear-history-btn">Clear All History</button>
+        </div>
+    </dialog>
 
     <div id="youtube-player"></div>
 
@@ -383,6 +607,7 @@
         });
 
         const STORAGE_KEY = 'pomodoro-state';
+        const YOUTUBE_HISTORY_KEY = 'pomodoro-youtube-history';
 
         // State
         const state = {
@@ -467,6 +692,68 @@
             localStorage.removeItem(STORAGE_KEY);
         }
 
+        // YouTube history functions
+        function loadYoutubeHistory() {
+            const saved = localStorage.getItem(YOUTUBE_HISTORY_KEY);
+            if (saved) {
+                try {
+                    return JSON.parse(saved);
+                } catch (e) {
+                    return [];
+                }
+            }
+            return [];
+        }
+
+        function saveYoutubeHistory(history) {
+            localStorage.setItem(YOUTUBE_HISTORY_KEY, JSON.stringify(history));
+        }
+
+        async function fetchVideoTitle(url) {
+            try {
+                const response = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`);
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.title;
+                }
+            } catch (e) {
+                console.error('Failed to fetch video title:', e);
+            }
+            return null;
+        }
+
+        async function addToYoutubeHistory(url) {
+            if (!url) return;
+            const history = loadYoutubeHistory();
+            // Remove if already exists (to move to top)
+            const existingIndex = history.findIndex(item =>
+                (typeof item === 'string' ? item : item.url) === url
+            );
+            if (existingIndex > -1) {
+                history.splice(existingIndex, 1);
+            }
+            // Fetch video title
+            const title = await fetchVideoTitle(url);
+            // Add to beginning
+            history.unshift({ url, title: title || url });
+            saveYoutubeHistory(history);
+        }
+
+        function removeFromYoutubeHistory(url) {
+            const history = loadYoutubeHistory();
+            const index = history.findIndex(item =>
+                (typeof item === 'string' ? item : item.url) === url
+            );
+            if (index > -1) {
+                history.splice(index, 1);
+                saveYoutubeHistory(history);
+            }
+        }
+
+        function clearYoutubeHistory() {
+            localStorage.removeItem(YOUTUBE_HISTORY_KEY);
+        }
+
         // DOM Elements
         const timerDisplay = document.getElementById('timer-display');
         const sessionType = document.getElementById('session-type');
@@ -476,6 +763,63 @@
         const durationBtns = document.querySelectorAll('.duration-btn');
         const youtubeInput = document.getElementById('youtube-url');
         const youtubeStatus = document.getElementById('youtube-status');
+        const historyBtn = document.getElementById('history-btn');
+        const historyDialog = document.getElementById('history-dialog');
+        const historyList = document.getElementById('history-list');
+        const closeHistoryBtn = document.getElementById('close-history');
+        const clearHistoryBtn = document.getElementById('clear-history');
+
+        // History dialog functions
+        function renderHistoryDialog() {
+            const history = loadYoutubeHistory();
+            historyList.innerHTML = '';
+
+            if (history.length === 0) {
+                historyList.innerHTML = '<div class="history-empty">No YouTube URLs in history</div>';
+                return;
+            }
+
+            history.forEach(entry => {
+                // Handle both old format (string) and new format (object)
+                const url = typeof entry === 'string' ? entry : entry.url;
+                const title = typeof entry === 'string' ? entry : entry.title;
+
+                const item = document.createElement('div');
+                item.className = 'history-item';
+
+                const titleSpan = document.createElement('span');
+                titleSpan.className = 'history-item-url';
+                titleSpan.textContent = title;
+                titleSpan.title = url;
+                titleSpan.addEventListener('click', () => selectHistoryItem(url));
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'history-item-delete';
+                deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+                deleteBtn.title = 'Remove from history';
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removeFromYoutubeHistory(url);
+                    renderHistoryDialog();
+                });
+
+                item.appendChild(titleSpan);
+                item.appendChild(deleteBtn);
+                historyList.appendChild(item);
+            });
+        }
+
+        function selectHistoryItem(url) {
+            youtubeInput.value = url;
+            historyDialog.close();
+
+            const videoId = extractVideoId(url);
+            if (videoId) {
+                youtubeStatus.textContent = 'Loading...';
+                initYoutubePlayer(videoId);
+            }
+            saveState();
+        }
 
         // Load YouTube IFrame API
         const tag = document.createElement('script');
@@ -693,12 +1037,34 @@
             if (videoId) {
                 youtubeStatus.textContent = 'Loading...';
                 initYoutubePlayer(videoId);
+                addToYoutubeHistory(youtubeInput.value);
             } else if (youtubeInput.value) {
                 youtubeStatus.textContent = 'Invalid YouTube URL';
             } else {
                 youtubeStatus.textContent = '';
             }
             saveState();
+        });
+
+        // History dialog event listeners
+        historyBtn.addEventListener('click', () => {
+            renderHistoryDialog();
+            historyDialog.showModal();
+        });
+
+        closeHistoryBtn.addEventListener('click', () => {
+            historyDialog.close();
+        });
+
+        clearHistoryBtn.addEventListener('click', () => {
+            clearYoutubeHistory();
+            historyDialog.close();
+        });
+
+        historyDialog.addEventListener('click', (e) => {
+            if (e.target === historyDialog) {
+                historyDialog.close();
+            }
         });
 
         // Initialize
@@ -731,10 +1097,14 @@
 
         updateDisplay();
 
-        // Escape key returns to index
+        // Escape key closes dialog or returns to index
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                window.location.href = 'index.html';
+                if (historyDialog.open) {
+                    historyDialog.close();
+                } else {
+                    window.location.href = 'index.html';
+                }
             }
         });
     </script>
