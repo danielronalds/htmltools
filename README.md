@@ -10,9 +10,23 @@ The tools are hosted on GitHub pages, [here](https://danielronalds.github.io/htm
 
 Optionally, they can be run locally. Each HTML file is completely self contained, and can be hosted statically.
 
+## Development
+
+With [mise](https://mise.jdx.dev/) installed, run the development server with live reloading:
+
+```bash
+mise run dev
+```
+
+Optionally specify a port:
+
+```bash
+mise run dev port=3000
+```
+
 ## Features
 
 - Dark/light mode toggle (persists across sessions)
 - Keyboard navigation (Escape returns to home)
 - State persistence via localStorage
-- No external dependencies (except Font Awesome icons via CDN)
+- Minimal external dependencies (Font Awesome icons, lz-string compression, YouTube API)

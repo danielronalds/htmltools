@@ -1,6 +1,6 @@
 [tools]
-python = "latest"
+node = "latest"
 
-[tasks.serve]
-description = "Start a local web server"
-run = "python3 -m http.server 8000"
+[tasks.dev]
+description = "Start development server with live reload"
+run = "npx live-server --port={{arg(name='port', default='8000')}}"
