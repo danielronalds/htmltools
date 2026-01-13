@@ -106,11 +106,19 @@ themeToggle.addEventListener('click', () => {
 
 ## Copy Button Pattern
 
-Use clipboard icons (`fa-copy`) for copy functionality instead of text buttons. On successful copy, change the icon to a checkmark (`fa-check`) with visual feedback.
+Use clipboard icons (`fa-copy`) for copy functionality. On successful copy, change the icon to a checkmark (`fa-check`) with visual feedback.
 
-**HTML:**
+**Primary actions** (standalone buttons, main copy action): Use icon + text label
 ```html
-<button class="copy-btn"><i class="fa-solid fa-copy"></i></button>
+<button class="copy-btn">
+    <i class="fa-solid fa-copy"></i>
+    <span>Copy</span>
+</button>
+```
+
+**Inline/secondary actions** (per-field copy, compact UI): Use icon only
+```html
+<button class="copy-field-btn"><i class="fa-solid fa-copy"></i></button>
 ```
 
 **JavaScript:**
@@ -119,11 +127,14 @@ async function copyToClipboard(text, button) {
     try {
         await navigator.clipboard.writeText(text);
         const icon = button.querySelector('i');
+        const span = button.querySelector('span');
         icon.className = 'fa-solid fa-check';
         button.classList.add('copied');
+        if (span) span.textContent = 'Copied!';
         setTimeout(() => {
             icon.className = 'fa-solid fa-copy';
             button.classList.remove('copied');
+            if (span) span.textContent = 'Copy';
         }, 1500);
     } catch (err) {
         console.error('Failed to copy:', err);

@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lorem Ipsum Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0e6655 0%, #148f77 50%, #1abc9c 100%);
+            color: white;
+            padding: 2rem;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        body.light-mode {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 50%, #d5dbe1 100%);
+            color: #1a1a2e;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: background 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.light-mode .back-btn {
+            background: rgba(26, 188, 156, 0.1);
+            border-color: transparent;
+            color: #1abc9c;
+        }
+
+        body.light-mode .back-btn:hover {
+            background: rgba(26, 188, 156, 0.2);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.light-mode .theme-toggle {
+            background: rgba(26, 188, 156, 0.1);
+            border-color: transparent;
+            color: #1abc9c;
+        }
+
+        body.light-mode .theme-toggle:hover {
+            background: rgba(26, 188, 156, 0.2);
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            margin: 4rem auto 0;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            margin-bottom: 1.5rem;
+        }
+
+        body.light-mode .card {
+            background: rgba(255, 255, 255, 0.5);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .control-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .radio-option input {
+            display: none;
+        }
+
+        .radio-circle {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.2s ease;
+        }
+
+        body.light-mode .radio-circle {
+            border-color: rgba(26, 188, 156, 0.4);
+        }
+
+        .radio-circle::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #1abc9c;
+            transform: scale(0);
+            transition: transform 0.2s ease;
+        }
+
+        .radio-option input:checked + .radio-circle {
+            border-color: #1abc9c;
+        }
+
+        .radio-option input:checked + .radio-circle::after {
+            transform: scale(1);
+        }
+
+        .count-input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .count-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .count-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.light-mode .count-btn {
+            background: rgba(26, 188, 156, 0.1);
+            color: #1abc9c;
+        }
+
+        body.light-mode .count-btn:hover {
+            background: rgba(26, 188, 156, 0.2);
+        }
+
+        .count-input {
+            width: 80px;
+            padding: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+            -moz-appearance: textfield;
+        }
+
+        .count-input::-webkit-outer-spin-button,
+        .count-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        body.light-mode .count-input {
+            background: rgba(0, 0, 0, 0.03);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #1a1a2e;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .checkbox-option input {
+            display: none;
+        }
+
+        .checkbox-box {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        body.light-mode .checkbox-box {
+            border-color: rgba(26, 188, 156, 0.4);
+        }
+
+        .checkbox-box i {
+            font-size: 0.7rem;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        body.light-mode .checkbox-box i {
+            color: white;
+        }
+
+        .checkbox-option input:checked + .checkbox-box {
+            background: #1abc9c;
+            border-color: #1abc9c;
+        }
+
+        .checkbox-option input:checked + .checkbox-box i {
+            opacity: 1;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            margin-top: 1rem;
+        }
+
+        .generate-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        body.light-mode .generate-btn {
+            background: #1abc9c;
+            color: white;
+        }
+
+        body.light-mode .generate-btn:hover {
+            background: #17a589;
+        }
+
+        .output-container {
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .output-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1a1a2e;
+        }
+
+        .copy-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            background: rgba(26, 188, 156, 0.1);
+            color: #1abc9c;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(26, 188, 156, 0.2);
+        }
+
+        .copy-btn.copied {
+            background: rgba(92, 184, 92, 0.2);
+            color: #5cb85c;
+        }
+
+        .output-content {
+            padding: 1rem;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #1a1a2e;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .output-content.empty {
+            color: rgba(26, 26, 46, 0.4);
+            font-style: italic;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 1.5rem;
+            padding: 0.75rem 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            font-size: 0.85rem;
+            color: rgba(26, 26, 46, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Back to Tools</span>
+    </a>
+
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <i class="fa-solid fa-sun"></i>
+    </button>
+
+    <div class="container">
+        <h1>Lorem Ipsum Generator</h1>
+
+        <div class="card">
+            <div class="card-title"><i class="fa-solid fa-cog"></i> Configuration</div>
+
+            <div class="control-group">
+                <div class="control-label">Generate:</div>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="unit" value="paragraphs" checked>
+                        <span class="radio-circle"></span>
+                        <span>Paragraphs</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="unit" value="sentences">
+                        <span class="radio-circle"></span>
+                        <span>Sentences</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="unit" value="words">
+                        <span class="radio-circle"></span>
+                        <span>Words</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">Count:</div>
+                <div class="count-input-group">
+                    <button class="count-btn" id="decrement">-</button>
+                    <input type="number" class="count-input" id="count" value="5" min="1" max="100">
+                    <button class="count-btn" id="increment">+</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="checkbox-group">
+                    <label class="checkbox-option">
+                        <input type="checkbox" id="start-with-lorem" checked>
+                        <span class="checkbox-box"><i class="fa-solid fa-check"></i></span>
+                        <span>Start with "Lorem ipsum..."</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" id="wrap-html">
+                        <span class="checkbox-box"><i class="fa-solid fa-check"></i></span>
+                        <span>Wrap in HTML &lt;p&gt; tags</span>
+                    </label>
+                </div>
+            </div>
+
+            <button class="generate-btn" id="generate">Generate</button>
+        </div>
+
+        <div class="output-container">
+            <div class="output-header">
+                <span class="output-title">Output</span>
+                <button class="copy-btn" id="copy-btn">
+                    <i class="fa-solid fa-copy"></i>
+                    <span>Copy</span>
+                </button>
+            </div>
+            <div class="output-content empty" id="output">Click "Generate" to create lorem ipsum text</div>
+            <div class="stats-bar" id="stats">
+                <span id="word-count">Words: 0</span>
+                <span id="char-count">Characters: 0</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lorem Ipsum data
+        const LOREM_WORDS = [
+            'lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit',
+            'sed', 'do', 'eiusmod', 'tempor', 'incididunt', 'ut', 'labore', 'et', 'dolore',
+            'magna', 'aliqua', 'enim', 'ad', 'minim', 'veniam', 'quis', 'nostrud',
+            'exercitation', 'ullamco', 'laboris', 'nisi', 'aliquip', 'ex', 'ea', 'commodo',
+            'consequat', 'duis', 'aute', 'irure', 'in', 'reprehenderit', 'voluptate',
+            'velit', 'esse', 'cillum', 'fugiat', 'nulla', 'pariatur', 'excepteur', 'sint',
+            'occaecat', 'cupidatat', 'non', 'proident', 'sunt', 'culpa', 'qui', 'officia',
+            'deserunt', 'mollit', 'anim', 'id', 'est', 'laborum', 'porta', 'nibh', 'venenatis',
+            'cras', 'sed', 'felis', 'eget', 'velit', 'aliquet', 'sagittis', 'eu', 'volutpat',
+            'odio', 'facilisis', 'mauris', 'massa', 'vitae', 'tortor', 'condimentum',
+            'lacinia', 'quis', 'vel', 'eros', 'donec', 'ac', 'odio', 'tempor', 'orci',
+            'dapibus', 'ultrices', 'iaculis', 'nunc', 'pellentesque', 'dignissim', 'enim',
+            'sit', 'amet', 'venenatis', 'urna', 'cursus', 'eget', 'nunc', 'scelerisque',
+            'viverra', 'mauris', 'in', 'aliquam', 'sem', 'fringilla', 'ut', 'morbi',
+            'tincidunt', 'augue', 'interdum', 'velit', 'euismod'
+        ];
+
+        const LOREM_SENTENCES = [
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+            'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.',
+            'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.',
+            'Excepteur sint occaecat cupidatat non proident, sunt in culpa.',
+            'Nisi ut aliquip ex ea commodo consequat duis aute irure dolor.',
+            'Fugiat nulla pariatur excepteur sint occaecat cupidatat non proident.',
+            'Sunt in culpa qui officia deserunt mollit anim id est laborum.',
+            'Porta nibh venenatis cras sed felis eget velit aliquet sagittis.',
+            'Eu volutpat odio facilisis mauris sit amet massa vitae tortor.',
+            'Condimentum lacinia quis vel eros donec ac odio tempor orci.',
+            'Dapibus ultrices in iaculis nunc sed augue lacus viverra vitae.',
+            'Pellentesque dignissim enim sit amet venenatis urna cursus eget.',
+            'Nunc scelerisque viverra mauris in aliquam sem fringilla ut morbi.',
+            'Tincidunt augue interdum velit euismod in pellentesque massa placerat.',
+            'Volutpat blandit aliquam etiam erat velit scelerisque in dictum.',
+            'Non consectetur a erat nam at lectus urna duis convallis.',
+            'Arcu cursus vitae congue mauris rhoncus aenean vel elit scelerisque.',
+            'Mauris augue neque gravida in fermentum et sollicitudin ac orci.',
+            'Phasellus faucibus scelerisque eleifend donec pretium vulputate sapien.'
+        ];
+
+        const CLASSIC_OPENER = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
+
+        // State management
+        const STORAGE_KEY = 'lorem-ipsum-state';
+        const THEME_KEY = 'theme-preference';
+
+        let state = {
+            unit: 'paragraphs',
+            count: 5,
+            startWithLorem: true,
+            wrapInHtml: false
+        };
+
+        // DOM elements
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = themeToggle.querySelector('i');
+        const unitRadios = document.querySelectorAll('input[name="unit"]');
+        const countInput = document.getElementById('count');
+        const decrementBtn = document.getElementById('decrement');
+        const incrementBtn = document.getElementById('increment');
+        const startWithLoremCheckbox = document.getElementById('start-with-lorem');
+        const wrapHtmlCheckbox = document.getElementById('wrap-html');
+        const generateBtn = document.getElementById('generate');
+        const outputEl = document.getElementById('output');
+        const copyBtn = document.getElementById('copy-btn');
+        const wordCountEl = document.getElementById('word-count');
+        const charCountEl = document.getElementById('char-count');
+
+        // Theme management
+        function setTheme(isLight) {
+            document.body.classList.toggle('light-mode', isLight);
+            themeIcon.className = isLight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+            localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+        }
+
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        if (savedTheme === 'light') setTheme(true);
+
+        themeToggle.addEventListener('click', () => {
+            setTheme(!document.body.classList.contains('light-mode'));
+        });
+
+        // Escape key to go back
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // State persistence
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    state = { ...state, ...parsed };
+                } catch (e) {
+                    console.error('Failed to load saved state:', e);
+                }
+            }
+        }
+
+        function applyStateToUI() {
+            // Set radio button
+            unitRadios.forEach(radio => {
+                radio.checked = radio.value === state.unit;
+            });
+
+            // Set count
+            countInput.value = state.count;
+
+            // Set checkboxes
+            startWithLoremCheckbox.checked = state.startWithLorem;
+            wrapHtmlCheckbox.checked = state.wrapInHtml;
+        }
+
+        // Helper functions
+        function getRandomItem(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // Generation functions
+        function generateWords(count, startWithLorem) {
+            const words = [];
+
+            if (startWithLorem) {
+                words.push('Lorem', 'ipsum', 'dolor', 'sit', 'amet');
+                count = Math.max(0, count - 5);
+            }
+
+            for (let i = 0; i < count; i++) {
+                words.push(getRandomItem(LOREM_WORDS));
+            }
+
+            // Add punctuation
+            let result = '';
+            let sentenceLength = 0;
+            const targetSentenceLength = () => Math.floor(Math.random() * 8) + 8;
+            let currentTarget = targetSentenceLength();
+
+            words.forEach((word, i) => {
+                if (i === 0) {
+                    result += capitalize(word);
+                } else if (sentenceLength >= currentTarget && i < words.length - 1) {
+                    result += '. ' + capitalize(word);
+                    sentenceLength = 0;
+                    currentTarget = targetSentenceLength();
+                } else {
+                    result += ' ' + word;
+                }
+                sentenceLength++;
+            });
+
+            result += '.';
+            return result;
+        }
+
+        function generateSentences(count, startWithLorem) {
+            const sentences = [];
+
+            if (startWithLorem) {
+                sentences.push(CLASSIC_OPENER);
+                count--;
+            }
+
+            for (let i = 0; i < count; i++) {
+                let sentence;
+                do {
+                    sentence = getRandomItem(LOREM_SENTENCES);
+                } while (sentence === CLASSIC_OPENER && startWithLorem);
+                sentences.push(sentence);
+            }
+
+            return sentences.join(' ');
+        }
+
+        function generateParagraphs(count, startWithLorem) {
+            const paragraphs = [];
+
+            for (let i = 0; i < count; i++) {
+                const sentenceCount = Math.floor(Math.random() * 5) + 4; // 4-8 sentences
+                const useLoremStart = startWithLorem && i === 0;
+                paragraphs.push(generateSentences(sentenceCount, useLoremStart));
+            }
+
+            return paragraphs;
+        }
+
+        function formatOutput(paragraphs, wrapInHtml) {
+            if (wrapInHtml) {
+                return paragraphs.map(p => `<p>${p}</p>`).join('\n\n');
+            }
+            return paragraphs.join('\n\n');
+        }
+
+        // Generate and display
+        function generate() {
+            let text;
+
+            if (state.unit === 'paragraphs') {
+                const paragraphs = generateParagraphs(state.count, state.startWithLorem);
+                text = formatOutput(paragraphs, state.wrapInHtml);
+            } else if (state.unit === 'sentences') {
+                const sentences = generateSentences(state.count, state.startWithLorem);
+                text = state.wrapInHtml ? `<p>${sentences}</p>` : sentences;
+            } else {
+                const words = generateWords(state.count, state.startWithLorem);
+                text = state.wrapInHtml ? `<p>${words}</p>` : words;
+            }
+
+            outputEl.textContent = text;
+            outputEl.classList.remove('empty');
+            updateStats(text);
+        }
+
+        function updateStats(text) {
+            const plainText = text.replace(/<\/?p>/g, '');
+            const words = plainText.trim() ? plainText.trim().split(/\s+/).length : 0;
+            const chars = plainText.length;
+
+            wordCountEl.textContent = `Words: ${words.toLocaleString()}`;
+            charCountEl.textContent = `Characters: ${chars.toLocaleString()}`;
+        }
+
+        // Copy to clipboard
+        async function copyToClipboard() {
+            const text = outputEl.textContent;
+            if (outputEl.classList.contains('empty')) return;
+
+            try {
+                await navigator.clipboard.writeText(text);
+                const icon = copyBtn.querySelector('i');
+                const span = copyBtn.querySelector('span');
+                icon.className = 'fa-solid fa-check';
+                span.textContent = 'Copied!';
+                copyBtn.classList.add('copied');
+
+                setTimeout(() => {
+                    icon.className = 'fa-solid fa-copy';
+                    span.textContent = 'Copy';
+                    copyBtn.classList.remove('copied');
+                }, 1500);
+            } catch (e) {
+                console.error('Failed to copy:', e);
+            }
+        }
+
+        // Event listeners
+        unitRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                state.unit = e.target.value;
+                saveState();
+            });
+        });
+
+        countInput.addEventListener('change', (e) => {
+            let value = parseInt(e.target.value) || 1;
+            value = Math.max(1, Math.min(100, value));
+            state.count = value;
+            countInput.value = value;
+            saveState();
+        });
+
+        decrementBtn.addEventListener('click', () => {
+            if (state.count > 1) {
+                state.count--;
+                countInput.value = state.count;
+                saveState();
+            }
+        });
+
+        incrementBtn.addEventListener('click', () => {
+            if (state.count < 100) {
+                state.count++;
+                countInput.value = state.count;
+                saveState();
+            }
+        });
+
+        startWithLoremCheckbox.addEventListener('change', (e) => {
+            state.startWithLorem = e.target.checked;
+            saveState();
+        });
+
+        wrapHtmlCheckbox.addEventListener('change', (e) => {
+            state.wrapInHtml = e.target.checked;
+            saveState();
+        });
+
+        generateBtn.addEventListener('click', generate);
+        copyBtn.addEventListener('click', copyToClipboard);
+
+        // Initialize
+        loadState();
+        applyStateToUI();
+    </script>
+</body>
+</html>
