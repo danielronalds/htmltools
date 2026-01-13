@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unix Timestamp Converter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a5276 0%, #2471a3 50%, #3498db 100%);
+            color: white;
+            padding: 2rem;
+        }
+
+        body.light-mode {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 50%, #d5dbe1 100%);
+            color: #1a1a2e;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.light-mode .back-btn {
+            background: rgba(52, 152, 219, 0.1);
+            border-color: transparent;
+            color: #3498db;
+        }
+
+        body.light-mode .back-btn:hover {
+            background: rgba(52, 152, 219, 0.2);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.light-mode .theme-toggle {
+            background: rgba(52, 152, 219, 0.1);
+            border-color: transparent;
+            color: #3498db;
+        }
+
+        body.light-mode .theme-toggle:hover {
+            background: rgba(52, 152, 219, 0.2);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding-top: 4rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .now-display {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        .now-display span {
+            color: #85c1e9;
+        }
+
+        body.light-mode .now-display span {
+            color: #3498db;
+        }
+
+        .input-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .main-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            font-size: 1.1rem;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .main-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .main-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .main-input.error {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        body.light-mode .main-input {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(52, 152, 219, 0.2);
+            color: #1a1a2e;
+        }
+
+        body.light-mode .main-input::placeholder {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        body.light-mode .main-input:focus {
+            border-color: #3498db;
+            background: white;
+        }
+
+        body.light-mode .main-input.error {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.light-mode .quick-btn {
+            background: rgba(52, 152, 219, 0.1);
+            border-color: transparent;
+            color: #3498db;
+        }
+
+        body.light-mode .quick-btn:hover {
+            background: rgba(52, 152, 219, 0.2);
+        }
+
+        .results-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        body.light-mode .results-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(52, 152, 219, 0.2);
+        }
+
+        .results-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        body.light-mode .result-row {
+            border-bottom-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            min-width: 100px;
+        }
+
+        .result-value {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            flex: 1;
+            text-align: right;
+            margin: 0 1rem;
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 60px;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .copy-btn.copied {
+            background: rgba(46, 204, 113, 0.3);
+            border-color: rgba(46, 204, 113, 0.5);
+        }
+
+        body.light-mode .copy-btn {
+            background: rgba(52, 152, 219, 0.1);
+            border-color: transparent;
+            color: #3498db;
+        }
+
+        body.light-mode .copy-btn:hover {
+            background: rgba(52, 152, 219, 0.2);
+        }
+
+        body.light-mode .copy-btn.copied {
+            background: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+        }
+
+        .no-copy {
+            min-width: 60px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            opacity: 0.6;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .timezone-info {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                padding-top: 5rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .result-row {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .result-value {
+                text-align: left;
+                margin: 0;
+                order: 3;
+                width: 100%;
+            }
+
+            .copy-btn {
+                order: 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Back to Tools</span>
+    </a>
+
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <i class="fa-solid fa-sun"></i>
+    </button>
+
+    <div class="container">
+        <header>
+            <h1>Unix Timestamp Converter</h1>
+            <div class="now-display">Current: <span id="now-timestamp"></span></div>
+        </header>
+
+        <div class="input-section">
+            <div class="input-wrapper">
+                <input
+                    type="text"
+                    class="main-input"
+                    id="main-input"
+                    placeholder="Enter timestamp or date (e.g., 1705276800 or 2024-01-15T00:00:00Z)"
+                    autocomplete="off"
+                >
+            </div>
+            <div class="error-message" id="error-message">Invalid input. Enter a Unix timestamp or ISO 8601 date.</div>
+        </div>
+
+        <div class="quick-actions">
+            <button class="quick-btn" id="btn-now">Now</button>
+            <button class="quick-btn" id="btn-today">Today</button>
+            <button class="quick-btn" id="btn-week">This Week</button>
+        </div>
+
+        <div class="results-card">
+            <div class="results-title">Results</div>
+            <div id="results-content">
+                <div class="empty-state">Enter a timestamp or date to see conversions</div>
+            </div>
+        </div>
+
+        <div class="timezone-info">
+            Your timezone: <span id="timezone-name"></span>
+        </div>
+
+    </div>
+
+    <script>
+        // Theme handling
+        const THEME_KEY = 'theme-preference';
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = themeToggle.querySelector('i');
+
+        function setTheme(isLight) {
+            document.body.classList.toggle('light-mode', isLight);
+            themeIcon.className = isLight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+            localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+        }
+
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        if (savedTheme === 'light') setTheme(true);
+
+        themeToggle.addEventListener('click', () => {
+            setTheme(!document.body.classList.contains('light-mode'));
+        });
+
+        // Elements
+        const mainInput = document.getElementById('main-input');
+        const errorMessage = document.getElementById('error-message');
+        const resultsContent = document.getElementById('results-content');
+        const nowTimestamp = document.getElementById('now-timestamp');
+        const timezoneName = document.getElementById('timezone-name');
+
+        // Display timezone
+        timezoneName.textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        // Update live "Now" display
+        function updateNowDisplay() {
+            nowTimestamp.textContent = Math.floor(Date.now() / 1000);
+        }
+        updateNowDisplay();
+        setInterval(updateNowDisplay, 1000);
+
+        // Detect if timestamp is seconds or milliseconds
+        function detectTimestampUnit(value) {
+            const absValue = Math.abs(value);
+            // Current timestamps in seconds are ~10 digits
+            // Milliseconds are ~13 digits
+            // Use 12 digits as threshold (year ~2001 in ms, year ~33658 in seconds)
+            return absValue > 9999999999 ? 'ms' : 's';
+        }
+
+        // Parse input to Date
+        function parseInput(input) {
+            const trimmed = input.trim();
+            if (!trimmed) return null;
+
+            // Try parsing as number (timestamp)
+            if (/^-?\d+$/.test(trimmed)) {
+                const num = parseInt(trimmed, 10);
+                const unit = detectTimestampUnit(num);
+                const ms = unit === 'ms' ? num : num * 1000;
+                const date = new Date(ms);
+                if (!isNaN(date.getTime())) {
+                    return { date, detectedUnit: unit };
+                }
+            }
+
+            // Try parsing as ISO date string
+            const date = new Date(trimmed);
+            if (!isNaN(date.getTime())) {
+                return { date, detectedUnit: null };
+            }
+
+            return null;
+        }
+
+        // Get relative time string
+        function getRelativeTime(date) {
+            const now = Date.now();
+            const diff = date.getTime() - now;
+            const absDiff = Math.abs(diff);
+            const isPast = diff < 0;
+
+            const seconds = Math.floor(absDiff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            const weeks = Math.floor(days / 7);
+            const months = Math.floor(days / 30);
+            const years = Math.floor(days / 365);
+
+            let value, unit;
+            if (seconds < 60) {
+                value = seconds;
+                unit = 'second';
+            } else if (minutes < 60) {
+                value = minutes;
+                unit = 'minute';
+            } else if (hours < 24) {
+                value = hours;
+                unit = 'hour';
+            } else if (days < 7) {
+                value = days;
+                unit = 'day';
+            } else if (weeks < 4) {
+                value = weeks;
+                unit = 'week';
+            } else if (months < 12) {
+                value = months;
+                unit = 'month';
+            } else {
+                value = years;
+                unit = 'year';
+            }
+
+            const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+            return rtf.format(isPast ? -value : value, unit);
+        }
+
+        // Convert date to all formats
+        function convertTimestamp(date) {
+            const ms = date.getTime();
+            const seconds = Math.floor(ms / 1000);
+
+            return {
+                seconds: seconds.toString(),
+                milliseconds: ms.toString(),
+                isoUtc: date.toISOString(),
+                isoLocal: new Date(ms - date.getTimezoneOffset() * 60000).toISOString().slice(0, -1),
+                relative: getRelativeTime(date)
+            };
+        }
+
+        // Copy to clipboard with visual feedback
+        async function copyToClipboard(text, button) {
+            try {
+                await navigator.clipboard.writeText(text);
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                    button.classList.remove('copied');
+                }, 1500);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
+        }
+
+        // Render results
+        function renderResults(conversions) {
+            const rows = [
+                { label: 'Seconds', value: conversions.seconds, copyable: true },
+                { label: 'Milliseconds', value: conversions.milliseconds, copyable: true },
+                { label: 'ISO (UTC)', value: conversions.isoUtc, copyable: true },
+                { label: 'ISO (Local)', value: conversions.isoLocal, copyable: true },
+                { label: 'Relative', value: conversions.relative, copyable: false }
+            ];
+
+            resultsContent.innerHTML = rows.map(row => `
+                <div class="result-row">
+                    <span class="result-label">${row.label}</span>
+                    <span class="result-value">${row.value}</span>
+                    ${row.copyable
+                        ? `<button class="copy-btn" data-value="${row.value}">Copy</button>`
+                        : '<span class="no-copy"></span>'
+                    }
+                </div>
+            `).join('');
+
+            // Add copy button listeners
+            resultsContent.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    copyToClipboard(btn.dataset.value, btn);
+                });
+            });
+        }
+
+        // Show empty state
+        function showEmptyState() {
+            resultsContent.innerHTML = '<div class="empty-state">Enter a timestamp or date to see conversions</div>';
+        }
+
+        // Handle input
+        let currentConversions = null;
+
+        function handleInput() {
+            const value = mainInput.value;
+
+            if (!value.trim()) {
+                mainInput.classList.remove('error');
+                errorMessage.classList.remove('show');
+                showEmptyState();
+                currentConversions = null;
+                return;
+            }
+
+            const parsed = parseInput(value);
+
+            if (parsed) {
+                mainInput.classList.remove('error');
+                errorMessage.classList.remove('show');
+                currentConversions = convertTimestamp(parsed.date);
+                renderResults(currentConversions);
+            } else {
+                mainInput.classList.add('error');
+                errorMessage.classList.add('show');
+                showEmptyState();
+                currentConversions = null;
+            }
+        }
+
+        mainInput.addEventListener('input', handleInput);
+
+        // Quick action buttons
+        document.getElementById('btn-now').addEventListener('click', () => {
+            mainInput.value = Math.floor(Date.now() / 1000).toString();
+            handleInput();
+        });
+
+        document.getElementById('btn-today').addEventListener('click', () => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            mainInput.value = Math.floor(today.getTime() / 1000).toString();
+            handleInput();
+        });
+
+        document.getElementById('btn-week').addEventListener('click', () => {
+            const now = new Date();
+            const day = now.getDay();
+            const diff = day === 0 ? 6 : day - 1; // Monday is start of week
+            const monday = new Date(now);
+            monday.setDate(now.getDate() - diff);
+            monday.setHours(0, 0, 0, 0);
+            mainInput.value = Math.floor(monday.getTime() / 1000).toString();
+            handleInput();
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Focus input on load
+        mainInput.focus();
+    </script>
+</body>
+</html>
