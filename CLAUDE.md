@@ -104,6 +104,33 @@ themeToggle.addEventListener('click', () => {
 });
 ```
 
+## Copy Button Pattern
+
+Use clipboard icons (`fa-copy`) for copy functionality instead of text buttons. On successful copy, change the icon to a checkmark (`fa-check`) with visual feedback.
+
+**HTML:**
+```html
+<button class="copy-btn"><i class="fa-solid fa-copy"></i></button>
+```
+
+**JavaScript:**
+```javascript
+async function copyToClipboard(text, button) {
+    try {
+        await navigator.clipboard.writeText(text);
+        const icon = button.querySelector('i');
+        icon.className = 'fa-solid fa-check';
+        button.classList.add('copied');
+        setTimeout(() => {
+            icon.className = 'fa-solid fa-copy';
+            button.classList.remove('copied');
+        }, 1500);
+    } catch (err) {
+        console.error('Failed to copy:', err);
+    }
+}
+```
+
 ## Tool-Specific Theming
 
 Each tool should have its own accent color (the same color used for its icon on `index.html`). Apply this color to theming as follows:

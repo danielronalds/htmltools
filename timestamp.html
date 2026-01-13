@@ -254,15 +254,18 @@
         }
 
         .copy-btn {
-            padding: 0.4rem 0.75rem;
-            font-size: 0.8rem;
+            width: 36px;
+            height: 36px;
+            font-size: 1rem;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 6px;
             color: white;
             cursor: pointer;
             transition: all 0.2s ease;
-            min-width: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .copy-btn:hover {
@@ -290,7 +293,7 @@
         }
 
         .no-copy {
-            min-width: 60px;
+            width: 36px;
         }
 
         .empty-state {
@@ -527,10 +530,11 @@
         async function copyToClipboard(text, button) {
             try {
                 await navigator.clipboard.writeText(text);
-                button.textContent = 'Copied!';
+                const icon = button.querySelector('i');
+                icon.className = 'fa-solid fa-check';
                 button.classList.add('copied');
                 setTimeout(() => {
-                    button.textContent = 'Copy';
+                    icon.className = 'fa-solid fa-copy';
                     button.classList.remove('copied');
                 }, 1500);
             } catch (err) {
@@ -553,7 +557,7 @@
                     <span class="result-label">${row.label}</span>
                     <span class="result-value">${row.value}</span>
                     ${row.copyable
-                        ? `<button class="copy-btn" data-value="${row.value}">Copy</button>`
+                        ? `<button class="copy-btn" data-value="${row.value}"><i class="fa-solid fa-copy"></i></button>`
                         : '<span class="no-copy"></span>'
                     }
                 </div>
