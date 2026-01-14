@@ -2,7 +2,7 @@
 
 A collection of standalone HTML utilities. Each tool is a self-contained HTML file with embedded CSS and JavaScript - no build system or dependencies required.
 
-All tools are almost exclusively created through the use of AI.
+All tools are exclusively created through the use of AI. In fact I haven't looked at the code for most of them.
 
 ## Usage
 
@@ -26,7 +26,7 @@ mise run dev port=3000
 
 ## Features
 
-- Dark/light mode toggle (persists across sessions)
+- Dark/light mode toggle
 - Keyboard navigation (Escape returns to home)
 - State persistence via localStorage
 - Minimal external dependencies (Font Awesome icons, lz-string compression, YouTube API)
