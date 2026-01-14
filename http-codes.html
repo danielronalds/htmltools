@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTTP Status Codes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #3730a3 0%, #4f46e5 50%, #6366f1 100%);
+            color: white;
+            padding: 2rem;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        body.light-mode {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 50%, #d5dbe1 100%);
+            color: #1a1a2e;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: background 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.light-mode .back-btn {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: transparent;
+            color: #6366f1;
+        }
+
+        body.light-mode .back-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.light-mode .theme-toggle {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: transparent;
+            color: #6366f1;
+        }
+
+        body.light-mode .theme-toggle:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding-top: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1rem;
+        }
+
+        body.light-mode .subtitle {
+            color: rgba(26, 26, 46, 0.6);
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto 2rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        body.light-mode .search-icon {
+            color: rgba(26, 26, 46, 0.4);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 2.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .search-input:focus {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        body.light-mode .search-input {
+            background: rgba(0, 0, 0, 0.05);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #1a1a2e;
+        }
+
+        body.light-mode .search-input::placeholder {
+            color: rgba(26, 26, 46, 0.4);
+        }
+
+        body.light-mode .search-input:focus {
+            border-color: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        .codes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .code-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .code-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .code-card.hidden {
+            display: none;
+        }
+
+        body.light-mode .code-card {
+            background: rgba(255, 255, 255, 0.7);
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        body.light-mode .code-card:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0, 0, 0, 0.12);
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .code-number {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .code-number.info { color: #60a5fa; }
+        .code-number.success { color: #4ade80; }
+        .code-number.redirect { color: #facc15; }
+        .code-number.client-error { color: #fb923c; }
+        .code-number.server-error { color: #f87171; }
+
+        .code-message {
+            font-size: 1rem;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        .code-description {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            line-height: 1.5;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            opacity: 0.6;
+            display: none;
+        }
+
+        .no-results.visible {
+            display: block;
+        }
+
+        .result-count {
+            text-align: center;
+            font-size: 0.85rem;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Back to Tools</span>
+    </a>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <i class="fa-solid fa-sun"></i>
+    </button>
+
+    <div class="container">
+        <header>
+            <h1>HTTP Status Codes</h1>
+            <p class="subtitle">Quick reference for HTTP response codes</p>
+        </header>
+
+        <div class="search-container">
+            <i class="fa-solid fa-search search-icon"></i>
+            <input type="text" id="search-input" class="search-input" placeholder="Search by code or description..." autofocus>
+        </div>
+
+        <div class="result-count" id="result-count"></div>
+
+        <div class="codes-list" id="codes-list"></div>
+
+        <div class="no-results" id="no-results">
+            <i class="fa-solid fa-search" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+            No matching status codes found
+        </div>
+    </div>
+
+    <script>
+        const THEME_KEY = 'theme-preference';
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = themeToggle.querySelector('i');
+
+        function setTheme(isLight) {
+            document.body.classList.toggle('light-mode', isLight);
+            themeIcon.className = isLight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+            localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+        }
+
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        if (savedTheme === 'light') setTheme(true);
+
+        themeToggle.addEventListener('click', () => {
+            setTheme(!document.body.classList.contains('light-mode'));
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.location.href = 'index.html';
+            }
+        });
+
+        const HTTP_CODES = [
+            // 1xx Informational
+            { code: 100, message: "Continue", description: "Server received request headers; client should proceed to send the request body." },
+            { code: 101, message: "Switching Protocols", description: "Server is switching protocols as requested by the client (e.g., upgrading to WebSocket)." },
+            { code: 102, message: "Processing", description: "Server has received and is processing the request, but no response is available yet (WebDAV)." },
+            { code: 103, message: "Early Hints", description: "Used to return some response headers before the final HTTP message, allowing preloading of resources." },
+
+            // 2xx Success
+            { code: 200, message: "OK", description: "Request succeeded. Standard response for successful GET, POST, PUT, or DELETE requests." },
+            { code: 201, message: "Created", description: "Request succeeded and a new resource was created. Typically used after POST or PUT requests." },
+            { code: 202, message: "Accepted", description: "Request accepted for processing, but processing has not been completed. Used for async operations." },
+            { code: 203, message: "Non-Authoritative Information", description: "Request successful but the returned metadata may be from a cached or third-party copy." },
+            { code: 204, message: "No Content", description: "Request successful but no content to return. Common for DELETE requests or form submissions." },
+            { code: 205, message: "Reset Content", description: "Request successful; client should reset the document view (e.g., clear a form)." },
+            { code: 206, message: "Partial Content", description: "Server is delivering only part of the resource due to a Range header. Used for resumable downloads." },
+            { code: 207, message: "Multi-Status", description: "Conveys information about multiple resources in situations where multiple status codes might be appropriate (WebDAV)." },
+            { code: 208, message: "Already Reported", description: "Members of a DAV binding have already been enumerated and are not being included again (WebDAV)." },
+            { code: 226, message: "IM Used", description: "Server has fulfilled a GET request and the response is a representation of one or more instance-manipulations." },
+
+            // 3xx Redirection
+            { code: 300, message: "Multiple Choices", description: "Multiple options for the resource. Could be used for content negotiation with different formats." },
+            { code: 301, message: "Moved Permanently", description: "Resource has permanently moved to a new URL. Search engines update their links. Use for permanent redirects." },
+            { code: 302, message: "Found", description: "Resource temporarily at a different URL. Client should continue using the original URL for future requests." },
+            { code: 303, message: "See Other", description: "Response to the request can be found at another URL using GET. Often used after POST to prevent resubmission." },
+            { code: 304, message: "Not Modified", description: "Resource hasn't changed since last request. Client can use cached version. Saves bandwidth." },
+            { code: 305, message: "Use Proxy", description: "Requested resource must be accessed through the proxy specified in the Location header (deprecated)." },
+            { code: 307, message: "Temporary Redirect", description: "Resource temporarily at a different URL. Unlike 302, the request method must not change." },
+            { code: 308, message: "Permanent Redirect", description: "Resource permanently at a new URL. Unlike 301, the request method must not change." },
+
+            // 4xx Client Errors
+            { code: 400, message: "Bad Request", description: "Server cannot process the request due to malformed syntax, invalid parameters, or deceptive routing." },
+            { code: 401, message: "Unauthorized", description: "Authentication is required. Client must provide valid credentials (API key, token, or login)." },
+            { code: 402, message: "Payment Required", description: "Reserved for future use. Sometimes used for digital payment systems or API rate limit exceeded." },
+            { code: 403, message: "Forbidden", description: "Server understood the request but refuses to authorize it. Authentication won't help; access is denied." },
+            { code: 404, message: "Not Found", description: "Requested resource could not be found. Most common error - check URL, deleted content, or typos." },
+            { code: 405, message: "Method Not Allowed", description: "HTTP method (GET, POST, etc.) not supported for this resource. Check API documentation." },
+            { code: 406, message: "Not Acceptable", description: "Resource cannot generate content matching the Accept headers sent by the client." },
+            { code: 407, message: "Proxy Authentication Required", description: "Client must authenticate with the proxy before the request can proceed." },
+            { code: 408, message: "Request Timeout", description: "Server timed out waiting for the request. Client took too long to send data." },
+            { code: 409, message: "Conflict", description: "Request conflicts with current state of the resource. Common in version conflicts or duplicate entries." },
+            { code: 410, message: "Gone", description: "Resource permanently deleted and will not be available again. Unlike 404, this is intentional and permanent." },
+            { code: 411, message: "Length Required", description: "Server requires a Content-Length header in the request." },
+            { code: 412, message: "Precondition Failed", description: "One or more conditions in the request headers (If-Match, If-None-Match) evaluated to false." },
+            { code: 413, message: "Payload Too Large", description: "Request body exceeds server limits. Reduce file size or split into smaller requests." },
+            { code: 414, message: "URI Too Long", description: "URL is longer than the server can process. Move parameters to POST body instead." },
+            { code: 415, message: "Unsupported Media Type", description: "Server doesn't support the Content-Type of the request body. Check format (JSON, XML, etc.)." },
+            { code: 416, message: "Range Not Satisfiable", description: "Client requested a portion of the file that the server cannot supply (invalid Range header)." },
+            { code: 417, message: "Expectation Failed", description: "Server cannot meet the requirements of the Expect request header." },
+            { code: 418, message: "I'm a Teapot", description: "Easter egg from RFC 2324. The server refuses to brew coffee because it is a teapot." },
+            { code: 421, message: "Misdirected Request", description: "Request was directed at a server that cannot produce a response (e.g., wrong TLS certificate)." },
+            { code: 422, message: "Unprocessable Entity", description: "Request was well-formed but contains semantic errors. Common for validation failures in APIs." },
+            { code: 423, message: "Locked", description: "Resource is locked and cannot be modified (WebDAV)." },
+            { code: 424, message: "Failed Dependency", description: "Request failed because it depended on another request that failed (WebDAV)." },
+            { code: 425, message: "Too Early", description: "Server is unwilling to process a request that might be replayed (TLS early data)." },
+            { code: 426, message: "Upgrade Required", description: "Client should switch to a different protocol (e.g., TLS/1.0)." },
+            { code: 428, message: "Precondition Required", description: "Server requires the request to be conditional (If-Match header) to prevent lost updates." },
+            { code: 429, message: "Too Many Requests", description: "Rate limit exceeded. Client is sending too many requests. Wait and retry with backoff." },
+            { code: 431, message: "Request Header Fields Too Large", description: "Server refuses to process due to oversized headers. Reduce header size or cookies." },
+            { code: 451, message: "Unavailable For Legal Reasons", description: "Resource unavailable due to legal demands (censorship, court order, DMCA takedown)." },
+
+            // 5xx Server Errors
+            { code: 500, message: "Internal Server Error", description: "Generic server error. Something went wrong on the server side. Check server logs for details." },
+            { code: 501, message: "Not Implemented", description: "Server doesn't support the functionality required to fulfill the request." },
+            { code: 502, message: "Bad Gateway", description: "Server acting as a gateway received an invalid response from the upstream server." },
+            { code: 503, message: "Service Unavailable", description: "Server is temporarily unable to handle the request. Usually due to maintenance or overload." },
+            { code: 504, message: "Gateway Timeout", description: "Gateway or proxy server didn't receive a timely response from the upstream server." },
+            { code: 505, message: "HTTP Version Not Supported", description: "Server doesn't support the HTTP protocol version used in the request." },
+            { code: 506, message: "Variant Also Negotiates", description: "Server has an internal configuration error in content negotiation." },
+            { code: 507, message: "Insufficient Storage", description: "Server cannot store the representation needed to complete the request (WebDAV)." },
+            { code: 508, message: "Loop Detected", description: "Server detected an infinite loop while processing the request (WebDAV)." },
+            { code: 510, message: "Not Extended", description: "Further extensions to the request are required for the server to fulfill it." },
+            { code: 511, message: "Network Authentication Required", description: "Client needs to authenticate to gain network access (captive portals, WiFi login pages)." }
+        ];
+
+        function getCodeCategory(code) {
+            if (code < 200) return 'info';
+            if (code < 300) return 'success';
+            if (code < 400) return 'redirect';
+            if (code < 500) return 'client-error';
+            return 'server-error';
+        }
+
+        function renderCodes(codes) {
+            const list = document.getElementById('codes-list');
+            const noResults = document.getElementById('no-results');
+            const resultCount = document.getElementById('result-count');
+
+            list.innerHTML = codes.map(item => `
+                <div class="code-card" data-code="${item.code}">
+                    <div class="code-header">
+                        <span class="code-number ${getCodeCategory(item.code)}">${item.code}</span>
+                        <span class="code-message">${item.message}</span>
+                    </div>
+                    <div class="code-description">${item.description}</div>
+                </div>
+            `).join('');
+
+            noResults.classList.toggle('visible', codes.length === 0);
+            resultCount.textContent = codes.length === HTTP_CODES.length
+                ? `${codes.length} status codes`
+                : `${codes.length} of ${HTTP_CODES.length} codes`;
+        }
+
+        function filterCodes(query) {
+            const q = query.toLowerCase().trim();
+            if (!q) {
+                renderCodes(HTTP_CODES);
+                return;
+            }
+
+            const filtered = HTTP_CODES.filter(item =>
+                item.code.toString().includes(q) ||
+                item.message.toLowerCase().includes(q) ||
+                item.description.toLowerCase().includes(q)
+            );
+            renderCodes(filtered);
+        }
+
+        const searchInput = document.getElementById('search-input');
+        searchInput.addEventListener('input', (e) => filterCodes(e.target.value));
+
+        // Initial render
+        renderCodes(HTTP_CODES);
+    </script>
+</body>
+</html>

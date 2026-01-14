@@ -44,7 +44,7 @@ python3 -m http.server 8000
 ## Patterns
 
 - State persistence uses `localStorage` with a tool-specific key (e.g., `pomodoro-state`)
-- Tool pages include a fixed-position back button in the top-left corner
+- Tool pages include a fixed-position back button in the top-left corner (see Back Button Pattern below)
 - Pressing Escape returns to `index.html` - add this handler to each tool:
 ```javascript
 document.addEventListener('keydown', (e) => {
@@ -102,6 +102,52 @@ if (savedTheme === 'light') setTheme(true);
 themeToggle.addEventListener('click', () => {
     setTheme(!document.body.classList.contains('light-mode'));
 });
+```
+
+## Back Button Pattern
+
+Each tool page has a fixed-position back button in the top-left corner with icon + text label.
+
+**HTML** (place at start of body):
+```html
+<a href="index.html" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i>
+    <span>Back to Tools</span>
+</a>
+```
+
+**CSS** (back button styles):
+```css
+.back-btn {
+    position: fixed;
+    top: 1.5rem;
+    left: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: background 0.2s ease;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+body.light-mode .back-btn {
+    background: rgba(<accent-rgb>, 0.1);
+    border-color: transparent;
+    color: <accent-color>;
+}
+
+body.light-mode .back-btn:hover {
+    background: rgba(<accent-rgb>, 0.2);
+}
 ```
 
 ## Copy Button Pattern
