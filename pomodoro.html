@@ -127,6 +127,22 @@
             color: white;
         }
 
+        .skip-break-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.75rem 1rem;
+        }
+
+        .skip-break-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .skip-break-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .youtube-section {
             margin-top: 1.5rem;
             padding-top: 1.5rem;
@@ -261,6 +277,15 @@
             color: #333;
         }
 
+        body.light-mode .skip-break-btn {
+            background: rgba(217, 85, 80, 0.1);
+            color: #d95550;
+        }
+
+        body.light-mode .skip-break-btn:hover:not(:disabled) {
+            background: rgba(217, 85, 80, 0.2);
+        }
+
         body.light-mode .youtube-section {
             border-top-color: rgba(51, 51, 51, 0.2);
         }
@@ -321,6 +346,15 @@
         }
 
         body.light-mode.break-mode .back-btn:hover {
+            background: rgba(76, 145, 149, 0.2);
+        }
+
+        body.light-mode.break-mode .skip-break-btn {
+            background: rgba(76, 145, 149, 0.1);
+            color: #4c9195;
+        }
+
+        body.light-mode.break-mode .skip-break-btn:hover:not(:disabled) {
             background: rgba(76, 145, 149, 0.2);
         }
 
@@ -556,6 +590,9 @@
         <div class="controls">
             <button class="control-btn start-btn" id="start-btn">Start</button>
             <button class="control-btn reset-btn" id="reset-btn">Reset</button>
+            <button class="control-btn skip-break-btn" id="skip-break-btn" title="Start Break">
+                <i class="fa-solid fa-mug-hot"></i>
+            </button>
         </div>
 
         <div class="youtube-section">
@@ -759,6 +796,7 @@
         const sessionType = document.getElementById('session-type');
         const roundCounter = document.getElementById('round-counter');
         const startBtn = document.getElementById('start-btn');
+        const skipBreakBtn = document.getElementById('skip-break-btn');
         const resetBtn = document.getElementById('reset-btn');
         const durationBtns = document.querySelectorAll('.duration-btn');
         const youtubeInput = document.getElementById('youtube-url');
@@ -913,6 +951,7 @@
             sessionType.textContent = state.isBreak ? 'Break Time' : 'Work Session';
             roundCounter.textContent = `Round ${state.currentRound} of ${state.totalRounds}`;
             startBtn.textContent = state.isRunning ? 'Pause' : 'Start';
+            skipBreakBtn.disabled = state.isBreak;
 
             document.body.classList.toggle('work-mode', !state.isBreak);
             document.body.classList.toggle('break-mode', state.isBreak);
@@ -1015,6 +1054,11 @@
         });
 
         resetBtn.addEventListener('click', resetTimer);
+
+        skipBreakBtn.addEventListener('click', () => {
+            if (state.isBreak) return;
+            switchToBreak();
+        });
 
         durationBtns.forEach(btn => {
             btn.addEventListener('click', () => {
