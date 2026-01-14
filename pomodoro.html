@@ -181,11 +181,50 @@
             margin-top: 0.5rem;
         }
 
-        #youtube-player {
+        #youtube-player,
+        #break-youtube-player {
             position: absolute;
             left: -9999px;
             width: 1px;
             height: 1px;
+        }
+
+        .advanced-section {
+            margin-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .advanced-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            user-select: none;
+        }
+
+        .advanced-header:hover {
+            color: white;
+        }
+
+        .advanced-header i {
+            transition: transform 0.3s ease;
+        }
+
+        .advanced-section.open .advanced-header i {
+            transform: rotate(180deg);
+        }
+
+        .advanced-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .advanced-section.open .advanced-content {
+            max-height: 200px;
         }
 
         .back-btn {
@@ -310,6 +349,18 @@
 
         body.light-mode .youtube-status {
             color: rgba(51, 51, 51, 0.7);
+        }
+
+        body.light-mode .advanced-section {
+            border-top-color: rgba(51, 51, 51, 0.2);
+        }
+
+        body.light-mode .advanced-header {
+            color: rgba(51, 51, 51, 0.9);
+        }
+
+        body.light-mode .advanced-header:hover {
+            color: #333;
         }
 
         body.light-mode .back-btn {
@@ -605,6 +656,26 @@
             </div>
             <div class="youtube-status" id="youtube-status"></div>
         </div>
+
+        <div class="advanced-section" id="advanced-section">
+            <div class="advanced-header" id="advanced-header">
+                <span>Advanced Features</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="advanced-content">
+                <label class="youtube-label" for="break-youtube-url">
+                    YouTube URL (audio will play during breaks)
+                </label>
+                <div class="youtube-input-wrapper">
+                    <input type="text" id="break-youtube-url" class="youtube-input"
+                           placeholder="https://www.youtube.com/watch?v=...">
+                    <button id="break-history-btn" class="history-btn" title="YouTube URL History">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </button>
+                </div>
+                <div class="youtube-status" id="break-youtube-status"></div>
+            </div>
+        </div>
     </div>
 
     <dialog id="history-dialog" class="history-dialog">
@@ -621,6 +692,7 @@
     </dialog>
 
     <div id="youtube-player"></div>
+    <div id="break-youtube-player"></div>
 
     <script>
         const THEME_KEY = 'theme-preference';
@@ -658,14 +730,21 @@
             timeRemaining: 25 * 60,
             intervalId: null,
             youtubePlayer: null,
-            youtubeReady: false
+            youtubeReady: false,
+            breakYoutubePlayer: null,
+            advancedOpen: false
         };
+
+        // History dialog context - tracks which input triggered the dialog
+        let historyDialogContext = 'work';
 
         // localStorage functions
         function saveState() {
             const toSave = {
                 sessionDuration: state.sessionDuration,
                 youtubeUrl: document.getElementById('youtube-url').value,
+                breakYoutubeUrl: document.getElementById('break-youtube-url').value,
+                advancedOpen: state.advancedOpen,
                 currentRound: state.currentRound,
                 timeRemaining: state.timeRemaining,
                 isBreak: state.isBreak,
@@ -688,6 +767,15 @@
                     }
                     if (parsed.youtubeUrl) {
                         document.getElementById('youtube-url').value = parsed.youtubeUrl;
+                    }
+                    if (parsed.breakYoutubeUrl) {
+                        document.getElementById('break-youtube-url').value = parsed.breakYoutubeUrl;
+                    }
+                    if (typeof parsed.advancedOpen === 'boolean') {
+                        state.advancedOpen = parsed.advancedOpen;
+                        if (state.advancedOpen) {
+                            advancedSection.classList.add('open');
+                        }
                     }
                     if (typeof parsed.isBreak === 'boolean') {
                         state.isBreak = parsed.isBreak;
@@ -806,6 +894,11 @@
         const historyList = document.getElementById('history-list');
         const closeHistoryBtn = document.getElementById('close-history');
         const clearHistoryBtn = document.getElementById('clear-history');
+        const advancedSection = document.getElementById('advanced-section');
+        const advancedHeader = document.getElementById('advanced-header');
+        const breakYoutubeInput = document.getElementById('break-youtube-url');
+        const breakYoutubeStatus = document.getElementById('break-youtube-status');
+        const breakHistoryBtn = document.getElementById('break-history-btn');
 
         // History dialog functions
         function renderHistoryDialog() {
@@ -848,13 +941,20 @@
         }
 
         function selectHistoryItem(url) {
-            youtubeInput.value = url;
+            const inputEl = historyDialogContext === 'work' ? youtubeInput : breakYoutubeInput;
+            const statusEl = historyDialogContext === 'work' ? youtubeStatus : breakYoutubeStatus;
+
+            inputEl.value = url;
             historyDialog.close();
 
             const videoId = extractVideoId(url);
             if (videoId) {
-                youtubeStatus.textContent = 'Loading...';
-                initYoutubePlayer(videoId);
+                statusEl.textContent = 'Loading...';
+                if (historyDialogContext === 'work') {
+                    initYoutubePlayer(videoId);
+                } else {
+                    initBreakYoutubePlayer(videoId);
+                }
             }
             saveState();
         }
@@ -938,6 +1038,58 @@
             }
         }
 
+        // Initialize break YouTube player
+        function initBreakYoutubePlayer(videoId) {
+            if (!state.youtubeReady) {
+                breakYoutubeStatus.textContent = 'YouTube API loading...';
+                return;
+            }
+
+            if (state.breakYoutubePlayer) {
+                state.breakYoutubePlayer.destroy();
+            }
+
+            state.breakYoutubePlayer = new YT.Player('break-youtube-player', {
+                height: '1',
+                width: '1',
+                videoId: videoId,
+                playerVars: {
+                    autoplay: 0,
+                    controls: 0,
+                    disablekb: 1,
+                    fs: 0,
+                    modestbranding: 1,
+                    rel: 0
+                },
+                events: {
+                    onReady: () => {
+                        breakYoutubeStatus.textContent = 'Audio ready';
+                        // Auto-play if timer is running and on break
+                        if (state.isRunning && state.isBreak) {
+                            playBreakAudio();
+                        }
+                    },
+                    onError: (e) => {
+                        breakYoutubeStatus.textContent = 'Error loading video';
+                    }
+                }
+            });
+        }
+
+        // Play break YouTube audio
+        function playBreakAudio() {
+            if (state.breakYoutubePlayer && typeof state.breakYoutubePlayer.playVideo === 'function') {
+                state.breakYoutubePlayer.playVideo();
+            }
+        }
+
+        // Pause break YouTube audio
+        function pauseBreakAudio() {
+            if (state.breakYoutubePlayer && typeof state.breakYoutubePlayer.pauseVideo === 'function') {
+                state.breakYoutubePlayer.pauseVideo();
+            }
+        }
+
         // Format time as MM:SS
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
@@ -982,6 +1134,11 @@
             const isLongBreak = state.currentRound >= state.totalRounds;
             state.timeRemaining = (isLongBreak ? state.longBreakDuration : state.shortBreakDuration) * 60;
 
+            // Auto-play break music if timer is running
+            if (state.isRunning) {
+                playBreakAudio();
+            }
+
             updateDisplay();
             saveState();
         }
@@ -989,6 +1146,7 @@
         // Switch to work mode
         function switchToWork() {
             state.isBreak = false;
+            pauseBreakAudio();
 
             // Increment round after break
             if (state.currentRound >= state.totalRounds) {
@@ -1012,7 +1170,9 @@
             state.isRunning = true;
             state.intervalId = setInterval(tick, 1000);
 
-            if (!state.isBreak) {
+            if (state.isBreak) {
+                playBreakAudio();
+            } else {
                 playAudio();
             }
 
@@ -1026,6 +1186,7 @@
             clearInterval(state.intervalId);
             state.intervalId = null;
             pauseAudio();
+            pauseBreakAudio();
             updateDisplay();
             saveState();
         }
@@ -1086,12 +1247,50 @@
                 youtubeStatus.textContent = 'Invalid YouTube URL';
             } else {
                 youtubeStatus.textContent = '';
+                if (state.youtubePlayer) {
+                    state.youtubePlayer.destroy();
+                    state.youtubePlayer = null;
+                }
             }
             saveState();
         });
 
+        // Advanced section toggle
+        advancedHeader.addEventListener('click', () => {
+            state.advancedOpen = !state.advancedOpen;
+            advancedSection.classList.toggle('open', state.advancedOpen);
+            saveState();
+        });
+
+        // Break music input change handler
+        breakYoutubeInput.addEventListener('change', () => {
+            const videoId = extractVideoId(breakYoutubeInput.value);
+            if (videoId) {
+                breakYoutubeStatus.textContent = 'Loading...';
+                initBreakYoutubePlayer(videoId);
+                addToYoutubeHistory(breakYoutubeInput.value);
+            } else if (breakYoutubeInput.value) {
+                breakYoutubeStatus.textContent = 'Invalid YouTube URL';
+            } else {
+                breakYoutubeStatus.textContent = '';
+                if (state.breakYoutubePlayer) {
+                    state.breakYoutubePlayer.destroy();
+                    state.breakYoutubePlayer = null;
+                }
+            }
+            saveState();
+        });
+
+        // Break history button
+        breakHistoryBtn.addEventListener('click', () => {
+            historyDialogContext = 'break';
+            renderHistoryDialog();
+            historyDialog.showModal();
+        });
+
         // History dialog event listeners
         historyBtn.addEventListener('click', () => {
+            historyDialogContext = 'work';
             renderHistoryDialog();
             historyDialog.showModal();
         });
@@ -1134,6 +1333,23 @@
                     if (state.youtubeReady) {
                         clearInterval(checkReady);
                         initYoutubePlayer(videoId);
+                    }
+                }, 100);
+            }
+        }
+
+        // Initialize break YouTube player if URL was saved
+        const savedBreakUrl = breakYoutubeInput.value;
+        if (savedBreakUrl) {
+            const videoId = extractVideoId(savedBreakUrl);
+            if (videoId && state.youtubeReady) {
+                initBreakYoutubePlayer(videoId);
+            } else if (videoId) {
+                // Wait for YouTube API to be ready
+                const checkBreakReady = setInterval(() => {
+                    if (state.youtubeReady) {
+                        clearInterval(checkBreakReady);
+                        initBreakYoutubePlayer(videoId);
                     }
                 }, 100);
             }
