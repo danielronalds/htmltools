@@ -4,6 +4,8 @@ A collection of standalone HTML utilities. Each tool is a self-contained HTML fi
 
 All tools are exclusively created through the use of AI. In fact I haven't looked at the code for most of them.
 
+![Screenshot of HTML Tools](.github/site_screenshot.png)
+
 ## Usage
 
 The tools are hosted on GitHub pages, [here](https://danielronalds.github.io/htmltools/)
