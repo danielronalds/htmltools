@@ -433,6 +433,11 @@
                         <span class="radio-circle"></span>
                         <span>Words</span>
                     </label>
+                    <label class="radio-option">
+                        <input type="radio" name="unit" value="characters">
+                        <span class="radio-circle"></span>
+                        <span>Characters</span>
+                    </label>
                 </div>
             </div>
 
@@ -440,7 +445,7 @@
                 <div class="control-label">Count:</div>
                 <div class="count-input-group">
                     <button class="count-btn" id="decrement">-</button>
-                    <input type="number" class="count-input" id="count" value="5" min="1" max="100">
+                    <input type="number" class="count-input" id="count" value="5" min="1" max="10000">
                     <button class="count-btn" id="increment">+</button>
                 </div>
             </div>
@@ -647,6 +652,22 @@
             return result;
         }
 
+        function generateCharacters(count, startWithLorem) {
+            let text = '';
+
+            if (startWithLorem) {
+                text = CLASSIC_OPENER;
+            }
+
+            while (text.length < count) {
+                const sentence = getRandomItem(LOREM_SENTENCES);
+                if (sentence === CLASSIC_OPENER && startWithLorem && text.startsWith(CLASSIC_OPENER)) continue;
+                text += (text.length > 0 ? ' ' : '') + sentence;
+            }
+
+            return text.substring(0, count);
+        }
+
         function generateSentences(count, startWithLorem) {
             const sentences = [];
 
@@ -695,9 +716,12 @@
             } else if (state.unit === 'sentences') {
                 const sentences = generateSentences(state.count, state.startWithLorem);
                 text = state.wrapInHtml ? `<p>${sentences}</p>` : sentences;
-            } else {
+            } else if (state.unit === 'words') {
                 const words = generateWords(state.count, state.startWithLorem);
                 text = state.wrapInHtml ? `<p>${words}</p>` : words;
+            } else if (state.unit === 'characters') {
+                const chars = generateCharacters(state.count, state.startWithLorem);
+                text = state.wrapInHtml ? `<p>${chars}</p>` : chars;
             }
 
             outputEl.textContent = text;
@@ -738,16 +762,31 @@
         }
 
         // Event listeners
+        function getMaxCount() {
+            return state.unit === 'characters' ? 10000 : 100;
+        }
+
+        function updateCountMax() {
+            const max = getMaxCount();
+            countInput.max = max;
+            if (state.count > max) {
+                state.count = max;
+                countInput.value = state.count;
+                saveState();
+            }
+        }
+
         unitRadios.forEach(radio => {
             radio.addEventListener('change', (e) => {
                 state.unit = e.target.value;
+                updateCountMax();
                 saveState();
             });
         });
 
         countInput.addEventListener('change', (e) => {
             let value = parseInt(e.target.value) || 1;
-            value = Math.max(1, Math.min(100, value));
+            value = Math.max(1, Math.min(getMaxCount(), value));
             state.count = value;
             countInput.value = value;
             saveState();
@@ -762,7 +801,7 @@
         });
 
         incrementBtn.addEventListener('click', () => {
-            if (state.count < 100) {
+            if (state.count < getMaxCount()) {
                 state.count++;
                 countInput.value = state.count;
                 saveState();
@@ -785,6 +824,7 @@
         // Initialize
         loadState();
         applyStateToUI();
+        updateCountMax();
     </script>
 </body>
 </html>
